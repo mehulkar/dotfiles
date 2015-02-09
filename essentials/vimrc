@@ -1,0 +1,96 @@
+" set the runtime path to include Vundle and initialize
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'gmarik/Vundle.vim'
+Plugin 'scrooloose/syntastic'
+Plugin 'scrooloose/nerdtree'
+Plugin 'thoughtbot/vim-rspec'
+Plugin 'flazz/vim-colorschemes'
+Plugin 'bitc/vim-bad-whitespace'
+Plugin 'tpope/vim-markdown'
+Plugin 'Townk/vim-autoclose'
+Plugin 'kien/ctrlp.vim'
+
+call vundle#end()
+
+" Display options
+filetype plugin indent on       " Do filetype detection and load custom file plugins and indent files
+
+syntax on
+
+if $TERM =~ '256color'
+  set t_Co=256
+elseif $TERM =~ '^xterm$'
+  set t_Co=256
+endif
+colorscheme molokai
+
+set cursorline
+set number
+set list!                       " Display unprintable characters
+set listchars=tab:▸\ ,trail:•,extends:»,precedes:«
+set hidden                      " Don't abandon buffers moved to the background
+set wildmenu                    " Enhanced completion hints in command line
+set backspace=eol,start,indent  " Allow backspacing over indent, eol, & start
+set complete=.,w,b,u,U,t,i,d    " Do lots of scanning on tab completion
+set updatecount=100             " Write swap file to disk every 100 chars
+set directory=~/.vim/swap       " Directory to use for the swap file
+set diffopt=filler,iwhite       " In diff mode, ignore whitespace changes and align unchanged lines
+set scrolloff=3                 " Start scrolling 3 lines before the horizontal window border
+set noerrorbells                " Disable error bells
+set autoindent smartindent      " Indentation and tabbing
+set softtabstop=2
+set shiftwidth=2
+set tabstop=2
+set expandtab
+set undolevels=10000
+nnoremap <C-r> :GundoToggle<CR>
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+set showmatch
+set laststatus=2
+
+" up/down on displayed lines, not real lines. More useful than painful.
+noremap k gk
+noremap j gj
+
+" Keybindings to native vim features
+let mapleader=","
+let localmapleader=","
+
+" Remove trailing whitespace on save
+autocmd BufWritePre * :EraseBadWhitespace
+
+"""""""""""""""""""""""""
+" Plugins
+"""""""""""""""""""""""""
+nnoremap <C-g> :NERDTreeToggle<cr>
+let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$', '\.o$', '\.so$', '\.egg$', '^\.git$' ]
+let NERDTreeHighlightCursorline=1
+let NERDTreeShowBookmarks=1
+let NERDTreeShowFiles=1
+let NERDTreeShowHidden=1
+let g:syntastic_enable_signs=1
+let g:syntastic_mode_map = { 'mode': 'active',
+                           \ 'active_filetypes': [],
+                           \ 'passive_filetypes': ['c', 'scss'] }
+let g:quickfixsigns_classes=['qfl', 'vcsdiff', 'breakpoints']
+let g:Powerline_symbols = 'unicode'
+
+" When opening a file, always jump to the last cursor position
+autocmd BufReadPost *
+    \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+    \     exe "normal g'\"" |
+    \ endif |
+
+au BufNewFile,BufRead *.less set filetype=less
+
+" vim-rspec mappings
+map <Leader>t :call RunCurrentSpecFile()<CR>
+map <Leader>s :call RunNearestSpec()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <Leader>a :call RunAllSpecs()<CR>

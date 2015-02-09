@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+TRACKER_FILE=~/work-tracker.txt
+
+function track() {
+  echo $(date) >> $TRACKER_FILE
+  stamp=$(cat $TRACKER_FILE | tail -n 1)
+  echo "Appended $stamp to $TRACKER_FILE"
+}
+
+function workweek() {
+  if [ -d ".git" ]; then
+    count=$(git log --oneline --since="1 week ago" | wc -l | xargs)
+    git diff HEAD~$count --shortstat
+  else
+    exit 1
+  fi
+}
+
+function optimize_workflow() {
+  history                           | \
+    awk '{print $2 " " $3 " " $4}'  | \
+    awk 'BEGIN {FS="|"} {print $1}' | \
+    sort                            | \
+    uniq -c                         | \
+    sort -rn                        | \
+    head -30
+}
+
+function initialize_docker_on_osx() {
+  set -x
+  which boot2docker
+  if [ $? -eq 0 ]; then
+    boot2docker init
+    boot2docker up
+    $(boot2docker shellinit)
+  fi
+  set +x
+}
+
+function dev() {
+  track
+  cd "$HOME/dev/$1"
+}
+
+function nom () {
+  rm -rf node_modules tmp bower_components
+  npm cache clean
+  bower cache clean
+  npm i
+  bower i
+}
+
+## Navigation
+alias pl='cd ~/dev/scrap'
+
+## Shortcuts
+alias ls='ls -alHpG'
+alias be='bundle exec'
+alias grep='grep -i --color'
+alias egrep='egrep -i --color'
+alias webshare='python -m SimpleHTTPServer'
+alias rc='rustc'
+alias ow=optimize_workflow
+alias ww=workweek
+alias vup='vim +PluginInstall +qall'
+alias vi=vim
+alias b2d=initialize_docker_on_osx
+
+# Git shortcuts
+alias gp='git push'
+alias gc='git commit'
+alias gaa='git add -A'
+
+alias tmux='TERM=screen-256color-bce tmux'

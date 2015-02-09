@@ -1,0 +1,32 @@
+[core]
+  pager = less -r
+[alias]
+  t       = tag -n99
+  r       = remote -v
+  d       = diff
+  co      = checkout
+  dc      = diff --cached
+  s       = status
+  st      = status
+  br      = for-each-ref --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)" refs/heads
+  b       = branch
+  bra     = branch -a
+  brm     = branch --merged
+  l       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'--abbrev-commit --date=relative
+  unstage = reset HEAD
+  pr      = remote prune
+  redo    = reset --soft 'HEAD^'
+  pu      = pull upstream master
+  del-merged = "!f() { git checkout --quiet master && git branch --merged | grep --invert-match '\\*' | xargs -n 1 git branch --delete; git checkout --quiet @{-1}; }; f"
+  added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
+[color]
+  ui = true
+  relativePaths = false
+[help]
+  autocorrect = 1
+[push]
+	default = current
+[branch]
+  autosetuprebase=always
+[core]
+	editor = /usr/bin/vim

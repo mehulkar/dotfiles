@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# Keep track of env variables. Woohoo!
+# Source this in whatever shell profile
+
+## I should probably figure out what this does
+export ARCHFLAGS="-arch x86_64"
+
+# Open gems in Sublime. Use `bundle open <gemname>`
+export BUNDLER_EDITOR='subl'
+
+# So postgres stops being a pain
+export PGDATA=/usr/local/var/postgres postgres
+
+# Pretty colors in terminal
+export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+
+# increase hist size to a lot
+export HISTSIZE=9999999
+
+# Go path
+export GOPATH="$HOME/go"
+
+# PATH
+PATH=$PATH:$GOPATH/bin                          # Go
+PATH=/usr/local/Cellar/python/2.7.6/bin:$PATH   # Python
+PATH=$PATH:$HOME/.rvm/bin                       # Ruby
+PATH=$PATH:~/bin
+
+export PATH
+
+# Source RVM
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
+export LESS='-XF'
+
+export NODE_ENV='development'
