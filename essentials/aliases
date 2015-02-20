@@ -11,8 +11,10 @@ function track() {
 function workweek() {
   if [ -d ".git" ]; then
     count=$(git log --oneline --since="1 week ago" | wc -l | xargs)
+    echo "Stats since 1 week ago"
     git diff HEAD~$count --shortstat
   else
+    echo "Not a git directory"
     exit 1
   fi
 }
