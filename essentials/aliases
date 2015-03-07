@@ -57,7 +57,7 @@ function nom () {
 alias pl='cd ~/dev/scrap'
 
 ## Shortcuts
-alias ls='ls -alHpG'
+alias ls='ls -alHpGh'
 alias be='bundle exec'
 alias grep='grep -i --color'
 alias egrep='egrep -i --color'
