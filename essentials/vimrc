@@ -46,7 +46,6 @@ set shiftwidth=2
 set tabstop=2
 set expandtab
 set undolevels=10000
-nnoremap <C-r> :GundoToggle<CR>
 set ignorecase
 set smartcase
 set hlsearch
