@@ -45,16 +45,24 @@ function dev() {
   cd "$HOME/dev/$1"
 }
 
-function nom () {
-  rm -rf node_modules tmp bower_components
+function nom() {
+  set -x
+  rm -rf node_modules tmp
   npm cache clean
-  bower cache clean
   npm i
+  set +x
+}
+
+function bom(){
+  set -x
+  rm -rf bower_components;
+  bower cache clean
   bower i
+  set +x
 }
 
 ## Navigation
-alias pl='cd ~/dev/scrap'
+alias pl='dev scrap'
 
 ## Shortcuts
 alias ls='ls -alHpGh'
@@ -75,3 +83,5 @@ alias gc='git commit'
 alias gaa='git add -A'
 
 alias tmux='TERM=screen-256color-bce tmux'
+
+alias nombom='nom && bom'
