@@ -1,0 +1,9 @@
+## Shortcuts to cool commands
+source $HOME/.env
+source $HOME/.aliases
+
+if [ -f "$HOME/.secret" ]; then
+  source "$HOME/.secret"
+fi
+
+$(boot2docker shellinit)
