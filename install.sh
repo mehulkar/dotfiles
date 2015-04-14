@@ -16,8 +16,10 @@ for file in essentials/*; do
   ln -s $SOURCE $TARGET
 done
 
-git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim +PluginInstall +qall
+if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
+  git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+  vim +PluginInstall +qall
+fi
 
 echo "source ~/.env" >> ~/.bash_profile
 echo "source ~/.aliases" >> ~/.bash_profile
