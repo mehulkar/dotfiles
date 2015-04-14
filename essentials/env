@@ -9,6 +9,10 @@ export ARCHFLAGS="-arch x86_64"
 # Open gems in Sublime. Use `bundle open <gemname>`
 export BUNDLER_EDITOR='subl'
 
+export EDITOR='vim'
+export ARCHFLAGS="-arch x86_64"
+export SSH_KEY_PATH="~/.ssh/dsa_id"
+
 # So postgres stops being a pain
 export PGDATA=/usr/local/var/postgres postgres
 
@@ -36,3 +40,4 @@ export PATH
 export LESS='-XF'
 
 export NODE_ENV='development'
+
