@@ -85,3 +85,4 @@ alias gaa='git add -A'
 alias tmux='TERM=screen-256color-bce tmux'
 
 alias nombom='nom && bom'
+alias dc='docker-compose'
