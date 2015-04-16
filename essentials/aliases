@@ -75,7 +75,8 @@ alias ow=optimize_workflow
 alias ww=workweek
 alias vup='vim +PluginInstall +qall'
 alias vi=vim
-alias b2d=initialize_docker_on_osx
+alias b2d=boot2docker
+alias b2dup=initialize_docker_on_osx
 
 # Git shortcuts
 alias gp='git push'
