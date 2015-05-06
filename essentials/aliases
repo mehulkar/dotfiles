@@ -21,7 +21,7 @@ function workweek() {
 
 function optimize_workflow() {
   history                           | \
-    awk '{print $2 " " $3 " " $4}'  | \
+    awk '{print $4 " " $5}'         | \
     awk 'BEGIN {FS="|"} {print $1}' | \
     sort                            | \
     uniq -c                         | \
