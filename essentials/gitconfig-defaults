@@ -18,7 +18,7 @@
   pr      = remote prune
   redo    = reset --soft 'HEAD^'
   pu      = pull upstream master
-  del-merged = "!f() { git branch --merged | grep --invert-match '\\*\\|master\\|wip' | xargs -n 1 git branch --delete;  }; f"
+  del-merged = "!f() { git branch --merged | grep -v '\\*\\|master\\$' | xargs -n 1 git branch --delete;  }; f"
   added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
 [color]
   ui = true
