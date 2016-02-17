@@ -62,7 +62,7 @@ let mapleader=","
 let localmapleader=","
 
 " Remove trailing whitespace on save
-autocmd BufWritePre * :EraseBadWhitespace
+" autocmd BufWritePre * :EraseBadWhitespace
 
 """""""""""""""""""""""""
 " Plugins

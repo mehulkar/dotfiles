@@ -13,9 +13,6 @@ export EDITOR='vim'
 export ARCHFLAGS="-arch x86_64"
 export SSH_KEY_PATH="~/.ssh/dsa_id"
 
-# So postgres stops being a pain
-export PGDATA=/usr/local/var/postgres postgres
-
 # Pretty colors in terminal
 export CLICOLOR=1
 export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx

@@ -20,6 +20,9 @@
   pu      = pull upstream master
   del-merged = "!f() { git branch --merged | grep -v '\\*\\|master\\$' | xargs -n 1 git branch --delete;  }; f"
   added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
+  up      = "!f() { git del-merged && git pr origin; }; f"
+  rbi     = rebase -i
+  rba     = rebase --abort
 [color]
   ui = true
   relativePaths = false
