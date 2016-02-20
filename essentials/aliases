@@ -94,6 +94,6 @@ alias dc='docker-compose'
 
 function mov2gif() {
   file=$1
-  output=$(file/mov$/gif$)
-  ffmpeg -i $file  -pix_fmt rgb8 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > output
+  output="${file/mov/gif}"
+  ffmpeg -i $file  -pix_fmt rgb8 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > $output
 }
