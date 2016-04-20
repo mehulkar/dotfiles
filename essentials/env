@@ -40,3 +40,9 @@ export LESS='-XF'
 
 export NODE_ENV='development'
 
+# to setup php after installing using
+# https://github.com/Homebrew/homebrew-php
+export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
+
+# Swift Toolchain
+export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH"
