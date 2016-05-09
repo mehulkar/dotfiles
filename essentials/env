@@ -46,3 +46,5 @@ export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 
 # Swift Toolchain
 export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH"
+
+export PGDATA="/usr/local/var/postgres"
