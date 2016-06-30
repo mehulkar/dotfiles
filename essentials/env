@@ -31,6 +31,7 @@ PATH=$PATH:~/bin
 # swiftc
 PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin
 
+PATH="/usr/local/sbin:$PATH"                    # hombrew formulae
 export PATH
 
 # Source RVM
