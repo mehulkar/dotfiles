@@ -6,4 +6,4 @@ if [ -f "$HOME/.secret" ]; then
   source "$HOME/.secret"
 fi
 
-# $(boot2docker shellinit)
+eval "$(docker-machine env default)"
