@@ -49,3 +49,7 @@ export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH"
 
 export PGDATA="/usr/local/var/postgres"
+
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
