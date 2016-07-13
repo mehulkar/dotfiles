@@ -1,5 +1,6 @@
 ## Shortcuts to cool commands
 source $HOME/.env
+source $HOME/.path
 source $HOME/.aliases
 
 if [ -f "$HOME/.secret" ]; then
