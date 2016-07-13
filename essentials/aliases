@@ -29,17 +29,6 @@ function optimize_workflow() {
     head -30
 }
 
-function initialize_docker_on_osx() {
-  set -x
-  which boot2docker
-  if [ $? -eq 0 ]; then
-    boot2docker init
-    boot2docker up
-    $(boot2docker shellinit)
-  fi
-  set +x
-}
-
 function dev() {
   track $1
   cd "$HOME/dev/$1"
@@ -79,18 +68,16 @@ alias ow=optimize_workflow
 alias ww=workweek
 alias vup='vim +PluginInstall +qall'
 alias vi=vim
-alias b2d=boot2docker
-alias b2dup=initialize_docker_on_osx
+alias tmux='TERM=screen-256color-bce tmux'
+alias nombom='nom && bom'
+alias dc='docker-compose'
+alias dm='docker-machine'
+
 
 # Git shortcuts
 alias gp='git push'
 alias gc='git commit'
 alias gaa='git add -A'
-
-alias tmux='TERM=screen-256color-bce tmux'
-
-alias nombom='nom && bom'
-alias dc='docker-compose'
 
 function mov2gif() {
   file=$1
