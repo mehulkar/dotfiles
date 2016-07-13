@@ -28,7 +28,7 @@ PATH=$PATH:~/bin
 # swiftc
 PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin
 PATH=$PATH:/usr/local/sbin                      # hombrew formulae
-PATH="$PATH:$(brew --prefix homebrew/php/php56)/bin" # PHP
+PATH="$PATH:$(brew --prefix homebrew/php/php56)/bin" # PHP https://github.com/Homebrew/homebrew-php
 
 export PATH
 
@@ -37,7 +37,7 @@ export LESS='-XF'
 export NODE_ENV='development'
 
 # to setup php after installing using
-# https://github.com/Homebrew/homebrew-php
+
 
 
 export PGDATA="/usr/local/var/postgres"
