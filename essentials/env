@@ -16,28 +16,20 @@ export SSH_KEY_PATH="~/.ssh/dsa_id"
 # Pretty colors in terminal
 export CLICOLOR=1
 export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-
+export LESS='-XF'
 export HISTSIZE=9999999     # increase hist size to a lot
+
+export NODE_ENV='development'
+export PGDATA="/usr/local/var/postgres"
 export GOPATH="$HOME/go"    # Go path
 
 # PATH
+PATH=$PATH:$HOME/bin
+PATH=$PATH:/usr/local/sbin                      # hombrew formulae
 PATH=$PATH:$GOPATH/bin                          # Go
 PATH=/usr/local/Cellar/python/2.7.6/bin:$PATH   # Python
 PATH=$PATH:$HOME/.rvm/bin                       # Ruby
-PATH=$PATH:~/bin
-# swiftc
-PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin
-PATH=$PATH:/usr/local/sbin                      # hombrew formulae
+PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin   # swiftc
 PATH="$PATH:$(brew --prefix homebrew/php/php56)/bin" # PHP https://github.com/Homebrew/homebrew-php
 
 export PATH
-
-export LESS='-XF'
-
-export NODE_ENV='development'
-
-# to setup php after installing using
-
-
-
-export PGDATA="/usr/local/var/postgres"
