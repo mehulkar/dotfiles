@@ -17,11 +17,8 @@ export SSH_KEY_PATH="~/.ssh/dsa_id"
 export CLICOLOR=1
 export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 
-# increase hist size to a lot
-export HISTSIZE=9999999
-
-# Go path
-export GOPATH="$HOME/go"
+export HISTSIZE=9999999     # increase hist size to a lot
+export GOPATH="$HOME/go"    # Go path
 
 # PATH
 PATH=$PATH:$GOPATH/bin                          # Go
@@ -30,12 +27,10 @@ PATH=$PATH:$HOME/.rvm/bin                       # Ruby
 PATH=$PATH:~/bin
 # swiftc
 PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin
+PATH=$PATH:/usr/local/sbin                      # hombrew formulae
+PATH="$PATH:$(brew --prefix homebrew/php/php56)/bin" # PHP
 
-PATH="/usr/local/sbin:$PATH"                    # hombrew formulae
 export PATH
-
-# Source RVM
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
 export LESS='-XF'
 
@@ -43,13 +38,6 @@ export NODE_ENV='development'
 
 # to setup php after installing using
 # https://github.com/Homebrew/homebrew-php
-export PATH="$(brew --prefix homebrew/php/php56)/bin:$PATH"
 
-# Swift Toolchain
-export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH"
 
 export PGDATA="/usr/local/var/postgres"
-
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-

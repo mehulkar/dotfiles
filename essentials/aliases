@@ -73,7 +73,6 @@ alias nombom='nom && bom'
 alias dc='docker-compose'
 alias dm='docker-machine'
 
-
 # Git shortcuts
 alias gp='git push'
 alias gc='git commit'
