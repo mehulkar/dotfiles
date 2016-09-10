@@ -23,6 +23,7 @@
   up      = "!f() { git del-merged && git pr origin; }; f"
   rbi     = rebase -i
   rba     = rebase --abort
+  cp      = cherry-pick
 [color]
   ui = true
   relativePaths = false
@@ -34,3 +35,5 @@
   autosetuprebase=always
 [core]
 	editor = /usr/bin/vim
+[remote]
+  pushDefault = origin
