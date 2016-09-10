@@ -83,3 +83,9 @@ function mov2gif() {
   output="${file/mov/gif}"
   ffmpeg -i $file  -pix_fmt rgb8 -s 1000x789 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > $output
 }
+
+alias hjs="pbpaste | highlight --syntax=js -O rtf | pbcopy"
+
+function dhjs() {
+  highlight -O rtf $1 --font-size 24 --font Inconsolata --style solarized-dark -W -J 50 -j 3 --src-lang $2 | pbcopy
+}
