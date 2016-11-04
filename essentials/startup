@@ -7,7 +7,7 @@ if [ -f "$HOME/.secret" ]; then
 fi
 
 # Docker shell setup
-eval "$(docker-machine env default)"
+#eval "$(docker-machine env default)"
 
 # Python shell setup
 eval "$(pyenv init -)"
