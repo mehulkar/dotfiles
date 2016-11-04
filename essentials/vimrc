@@ -12,8 +12,10 @@ Plugin 'bitc/vim-bad-whitespace'
 Plugin 'tpope/vim-markdown'
 Plugin 'Townk/vim-autoclose'
 Plugin 'kien/ctrlp.vim'
+Plugin 'wincent/command-t'
 
 call vundle#end()
+
 
 " Display options
 filetype plugin indent on       " Do filetype detection and load custom file plugins and indent files
@@ -52,6 +54,7 @@ set hlsearch
 set incsearch
 set showmatch
 set laststatus=2
+set shell=/bin/sh
 
 " up/down on displayed lines, not real lines. More useful than painful.
 noremap k gk
