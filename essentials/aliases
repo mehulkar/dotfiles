@@ -19,6 +19,24 @@ function workweek() {
   fi
 }
 
+function pip-cd {
+  USAGE="Usage: pip-show <pacakgename>"
+  if [ -z $1  ]; then
+    echo $USAGE
+    return 1
+  fi
+
+  location=$(pip show $1 | grep Location | awk '{ print $2 }')
+  if [ -z $location ]; then
+    echo "$1 not found"
+    echo $USAGE
+    return 1
+  fi
+
+  echo "$location"
+  cd $location/$1
+}
+
 function optimize_workflow() {
   history                           | \
     awk '{print $4 " " $5}'         | \
