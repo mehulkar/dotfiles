@@ -72,15 +72,17 @@ function bigdir() {
   du -hsx * | sort -r | head -10
 }
 
-## Navigation
-alias pl='dev scrap'
-
 ## Shortcuts
 alias ls='ls -alHpGh'
 alias be='bundle exec'
 alias grep='grep -i --color'
 alias egrep='egrep -i --color'
-alias webshare='python -m SimpleHTTPServer'
+function webshare() {
+  PORT=8000
+  echo "Starting webserver on $PORT"
+  python -m SimpleHTTPServer
+}
+
 alias rc='rustc'
 alias ow=optimize_workflow
 alias ww=workweek
