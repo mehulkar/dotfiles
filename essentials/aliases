@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-#
-TRACKER_FILE=~/work-tracker.txt
 
+TRACKER_FILE=~/work-tracker.txt
 function track() {
   echo "$1, $(date)" >> $TRACKER_FILE
   stamp=$(cat $TRACKER_FILE | tail -n 1)
