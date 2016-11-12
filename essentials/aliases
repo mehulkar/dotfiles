@@ -96,6 +96,7 @@ alias dm='docker-machine'
 alias gp='git push'
 alias gc='git commit'
 alias gaa='git add -A'
+alias gpa='for r in $(git remote); do; echo "--> Pushing to $r"; git push $r; done'
 
 function mov2gif() {
   file=$1
