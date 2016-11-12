@@ -9,9 +9,5 @@ fi
 # Docker shell setup
 #eval "$(docker-machine env default)"
 
-# Python shell setup
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-
 # Source RVM
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
