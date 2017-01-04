@@ -117,9 +117,8 @@ alias cpu='cap uat deploy'
 alias cpp='cap production deploy'
 
 function mov2gif() {
-  file=$1
-  output="${file/mov/gif}"
-  ffmpeg -i $file  -pix_fmt rgb8 -s 1000x789 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > $output
+  echo "Use Licecap instead: http://www.cockos.com/licecap/"
+  return 1
 }
 
 alias hjs="pbpaste | highlight --syntax=js -O rtf | pbcopy"
