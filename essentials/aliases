@@ -92,6 +92,19 @@ alias nombom='nom && bom'
 alias dc='docker-compose'
 alias dm='docker-machine'
 
+function venv() {
+  name="${1-env}"
+
+  if [ "$name" ==  "off" ]; then
+    deactivate
+    return $?
+  fi
+
+  echo "Activing $name"
+  virtualenv $name > /dev/null
+  source "$name/bin/activate"
+}
+
 # Git shortcuts
 alias gp='git push'
 alias gc='git commit'
