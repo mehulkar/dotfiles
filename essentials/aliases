@@ -18,23 +18,6 @@ function workweek() {
   fi
 }
 
-function pip-cd {
-  USAGE="Usage: pip-show <pacakgename>"
-  if [ -z $1  ]; then
-    echo $USAGE
-    return 1
-  fi
-
-  location=$(pip show $1 | grep Location | awk '{ print $2 }')
-  if [ -z $location ]; then
-    echo "$1 not found"
-    echo $USAGE
-    return 1
-  fi
-
-  echo "$location"
-  cd $location/$1
-}
 
 function optimize_workflow() {
   history                           | \
@@ -50,6 +33,8 @@ function dev() {
   track $1
   cd "$HOME/dev/$1"
 }
+
+alias oss='dev oss'
 
 function nom() {
   set -x
@@ -71,17 +56,17 @@ function bigdir() {
   du -hsx * | sort -r | head -10
 }
 
-## Shortcuts
-alias ls='ls -alHpGh'
-alias be='bundle exec'
-alias grep='grep -i --color'
-alias egrep='egrep -i --color'
 function webshare() {
   PORT=8000
   echo "Starting webserver on $PORT"
   python -m SimpleHTTPServer
 }
 
+## Shortcuts
+alias ls='ls -alHpGh'
+alias be='bundle exec'
+alias grep='grep -i --color'
+alias egrep='egrep -i --color'
 alias rc='rustc'
 alias ow=optimize_workflow
 alias ww=workweek
@@ -92,7 +77,30 @@ alias nombom='nom && bom'
 alias dc='docker-compose'
 alias dm='docker-machine'
 
-function venv() {
+########### START Python ##################
+alias pd='python setup.py sdist'
+alias pup='python setup.py sdist upload'
+alias pst='python setup.py test'
+
+function pip-cd {
+  USAGE="Usage: pip-show <pacakgename>"
+  if [ -z $1  ]; then
+    echo $USAGE
+    return 1
+  fi
+
+  location=$(pip show $1 | grep Location | awk '{ print $2 }')
+  if [ -z $location ]; then
+    echo "$1 not found"
+    echo $USAGE
+    return 1
+  fi
+
+  echo "$location"
+  cd $location/$1
+}
+
+function v() {
   name="${1-env}"
 
   if [ "$name" ==  "off" ]; then
@@ -100,10 +108,21 @@ function venv() {
     return $?
   fi
 
-  echo "Activing $name"
+  echo "Activating $name"
   virtualenv $name > /dev/null
   source "$name/bin/activate"
 }
+
+alias f='flake8'
+
+function flist() {
+  flake8 | awk '{print $2}' | sort -u
+}
+
+function fl {
+  flake8 --select $1
+}
+############ END Python ##################
 
 # Git shortcuts
 alias gp='git push'
@@ -112,17 +131,16 @@ alias gaa='git add -A'
 alias gpa='for r in $(git remote); do; echo "--> Pushing to $r"; git push $r; done'
 alias gpu='git push upstream'
 
+# middleman
+alias ms='bundle exec middleman server'
+alias md='bundle exec middleman build'
+
+# ember
+alias es='ember server'
+
 # Capistrano
 alias cpu='cap uat deploy'
 alias cpp='cap production deploy'
 
-function mov2gif() {
-  echo "Use Licecap instead: http://www.cockos.com/licecap/"
-  return 1
-}
-
-alias hjs="pbpaste | highlight --syntax=js -O rtf | pbcopy"
-
-function dhjs() {
-  highlight -O rtf $1 --font-size 24 --font Inconsolata --style solarized-dark -W -J 50 -j 3 --src-lang $2 | pbcopy
-}
+# General
+alias e='subl'

@@ -25,6 +25,7 @@
   rba     = rebase --abort
   cp      = cherry-pick
   ci      = commit
+  overview = log --all --since='2 weeks' --oneline --no-merges
 [color]
   ui = true
   relativePaths = false
