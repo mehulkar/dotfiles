@@ -39,7 +39,6 @@ alias oss='dev oss'
 function nom() {
   set -x
   rm -rf node_modules tmp
-  npm cache clean
   npm i
   set +x
 }
@@ -125,7 +124,8 @@ function fl {
 ############ END Python ##################
 
 # Git shortcuts
-alias gp='git push'
+alias gp='git push origin'
+alias gpf='git push --force-with-lease'
 alias gc='git commit'
 alias gaa='git add -A'
 alias gpa='for r in $(git remote); do; echo "--> Pushing to $r"; git push $r; done'
@@ -143,4 +143,7 @@ alias cpu='cap uat deploy'
 alias cpp='cap production deploy'
 
 # General
-alias e='subl'
+alias e='code'
+alias b='brew'
+alias bu='b upgrade'
+alias secs='date +%s'
