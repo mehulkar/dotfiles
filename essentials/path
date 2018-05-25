@@ -10,7 +10,6 @@ PATH=/usr/local/Cellar/python/2.7.6/bin:$PATH                               # Py
 PATH=$PATH:/usr/local/lib/python2.7/site-packages                           # Python packages
 PATH=$PATH:$HOME/.rvm/bin                                                   # Ruby
 PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin   # swiftc
-PATH="$PATH:$(brew --prefix homebrew/php/php56)/bin"                        # PHP https://github.com/Homebrew/homebrew-php
 PATH="/Users/mehulkar/perl5/bin${PATH+:}${PATH}"                            # Perl
 
 export PATH
