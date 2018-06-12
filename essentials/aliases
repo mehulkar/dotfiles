@@ -35,6 +35,7 @@ function dev() {
 }
 
 alias oss='dev oss'
+alias dd='dev dotfiles'
 
 function nom() {
   set -x
