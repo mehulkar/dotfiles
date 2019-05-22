@@ -23,7 +23,7 @@ fi
 
 echo "source ~/.env" >> ~/.bash_profile
 echo "source ~/.aliases" >> ~/.bash_profile
-echo "if [ -f $HOME/.secret ]; then; source $HOME/.aliases; fi" >> ~/.bash_profile
+echo "if [ -f $HOME/.secret ]; then; source $HOME/.secret; fi" >> ~/.bash_profile
 
 # Copy sample gitconfig
 GITSOURCE="$PWD/gitconfig.sample"
