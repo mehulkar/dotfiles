@@ -131,6 +131,7 @@ alias gc='git commit'
 alias gaa='git add -A'
 alias gpa='for r in $(git remote); do; echo "--> Pushing to $r"; git push $r; done'
 alias gpu='git push upstream'
+alias gl='git log --format=fuller'
 
 # middleman
 alias ms='bundle exec middleman server'
