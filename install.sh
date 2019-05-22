@@ -21,9 +21,15 @@ if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
   vim +PluginInstall +qall
 fi
 
-echo "source ~/.env" >> ~/.bash_profile
-echo "source ~/.aliases" >> ~/.bash_profile
-echo "if [ -f $HOME/.secret ]; then; source $HOME/.secret; fi" >> ~/.bash_profile
+echo "Make zsh the default shell"
+chsh -s $(which zsh)
+
+echo "Install oh-my-zsh"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+echo "Add startup scripts to zsh"
+echo "if [ -f $HOME/.startup ]; then; source $HOME/.startup; fi" >> ~/.zshrc
+echo "if [ -f $HOME/.secret ]; then; source $HOME/.secret; fi" >> ~/.zshrc
 
 # Copy sample gitconfig
 GITSOURCE="$PWD/gitconfig.sample"
