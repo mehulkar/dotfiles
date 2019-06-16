@@ -3,8 +3,7 @@
 ### Usage
 
 ```bash
-git clone <the git url for this repo> dotfiles
-cd dotfiles
+git clone git@github.com:mehulkar/dotfiles.git && cd dotfiles
 ./install.sh
 ```
 
