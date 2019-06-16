@@ -21,8 +21,12 @@ if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
   vim +PluginInstall +qall
 fi
 
-echo "Make zsh the default shell"
-chsh -s $(which zsh)
+if [ $SHELL != '/bin/zsh' ]; then
+  echo "Make zsh the default shell"
+  chsh -s $(which zsh)
+else
+  echo "zsh is already the default shell"
+fi
 
 echo "Install oh-my-zsh"
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
