@@ -3,7 +3,7 @@
 set -x
 set -e
 
-BACKUPDIR="$HOME/dotfile-bak"
+BACKUPDIR="$HOME/dotfiles-bak"
 rm -rf $BACKUPDIR
 mkdir -p $BACKUPDIR
 
