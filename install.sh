@@ -51,10 +51,20 @@ cp $GITSOURCE $GITTARGET
 
 echo "Other TODO items:"
 echo
-echo "Install Monokai terminal theme: https://www.github.com/stephenway/monokai.terminal"
+echo "Install Monokai terminal theme:"
+echo "    https://www.github.com/stephenway/monokai.terminal"
+echo
 echo "Install HomeBrew:"
 echo "    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)""
+echo
 echo "Install NVM:"
 echo "    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash"
+echo
 echo "Install RVM:"
 echo "    \curl -sSL https://get.rvm.io | bash -s stable"
+echo
+echo "Install VSCode:"
+echo "    https://code.visualstudio.com/download"
+echo
+echo "Setup SSH Keys:"
+echo "    https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
