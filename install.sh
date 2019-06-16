@@ -10,14 +10,19 @@ for file in essentials/*; do
   SOURCE="$PWD/$file"
   TARGET="$HOME/.$(basename $file)"
   if [ -f $TARGET ] || [ -L $TARGET ] ; then
-   mv $TARGET $BACKUPDIR
+    echo "Backing up existing $TARGET"
+    mv $TARGET $BACKUPDIR
   fi
+  echo "Symlinking $SOURCE to $HOME"
   ln -s $SOURCE $TARGET
 done
 
 if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
+  echo "Installing VIM plugins with vundle"
   git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
   vim +PluginInstall +qall
+else
+  echo "Skipping VIM plugins"
 fi
 
 if [ $SHELL != '/bin/zsh' ]; then
