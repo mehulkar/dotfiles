@@ -44,3 +44,7 @@ if [ -f $GITTARGET ] || [ -L $GITTARGET]; then
 fi
 
 cp $GITSOURCE $GITTARGET
+
+echo "Other TODO items:"
+echo
+echo "Install Monokai terminal theme: https://www.github.com/stephenway/monokai.terminal"
