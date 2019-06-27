@@ -4,8 +4,6 @@ source $HOME/.env
 source $HOME/.path
 source $HOME/.aliases
 
-source $HOME/.rvm/scripts/rvm
-
 if [ -f "$HOME/.secret" ]; then
   source "$HOME/.secret"
 fi
