@@ -37,21 +37,6 @@ function dev() {
 alias oss='dev oss'
 alias dd='dev dotfiles'
 
-function nom() {
-  set -x
-  rm -rf node_modules tmp
-  npm i
-  set +x
-}
-
-function bom(){
-  set -x
-  rm -rf bower_components;
-  bower cache clean
-  bower i
-  set +x
-}
-
 function bigdir() {
   du -hsx * | sort -r | head -10
 }
@@ -73,7 +58,6 @@ alias ww=workweek
 alias vup='vim +PluginInstall +qall'
 alias vi=vim
 alias tmux='TERM=screen-256color-bce tmux'
-alias nombom='nom && bom'
 alias dc='docker-compose'
 alias dm='docker-machine'
 
