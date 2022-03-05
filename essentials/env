@@ -21,8 +21,11 @@ export HISTTIMEFORMAT="%d/%m/%y %T "
 export PGDATA="/usr/local/var/postgres"
 export GOPATH="$HOME/go"    # Go path
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" ]
+#export NVM_DIR="$HOME/.nvm"
+#[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" ]
 
-eval "$(rbenv init -)"
+# eval "$(rbenv init -)"
+
+
+export VOLTA_HOME=$HOME/.volta
 

@@ -11,6 +11,7 @@ PATH=$PATH:/usr/local/lib/python2.7/site-packages                           # Py
 PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin   # swiftc
 PATH="/Users/mehulkar/perl5/bin${PATH+:}${PATH}"                            # Perl
 PATH="$PATH:$HOME/.rvm/bin"                                                 # Ruby
+PATH="$PATH:$VOLTA_HOME/bin"
 
 export PATH
 

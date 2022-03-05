@@ -12,13 +12,13 @@
   b       = branch
   bra     = branch -a
   brm     = branch --merged
-  l       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'--abbrev-commit --date=relative
+  l       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
   last    = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'--abbrev-commit --date=relative -1
   unstage = reset HEAD
   pr      = remote prune
   redo    = reset --soft 'HEAD^'
   pu      = pull upstream master
-  del-merged = "!f() { git branch --merged | grep -v '\\*\\|master\\$' | xargs -n 1 git branch --delete;  }; f"
+  del-merged = "!f() { git branch --merged | grep -v '\\*\\|master\\|main\\$' | xargs -n 1 git branch --delete;  }; f"
   added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
   up      = "!f() { git del-merged && git pr origin; }; f"
   rbi     = rebase -i

@@ -36,21 +36,20 @@ function dev() {
 
 alias oss='dev oss'
 alias dd='dev dotfiles'
+alias dp='dev playground'
 
 function bigdir() {
   du -hsx * | sort -r | head -10
 }
 
 function webshare() {
-  PORT=8000
-  echo "Starting webserver on $PORT"
-  python -m SimpleHTTPServer
+  npx serve
 }
 
 ## Shortcuts
 alias ls='ls -alHpGh'
 alias be='bundle exec'
-alias grep='grep -i --color'
+#alias grep='grep -i --color'
 alias egrep='egrep -i --color'
 alias rc='rustc'
 alias ow=optimize_workflow
@@ -133,3 +132,15 @@ alias e='code'
 alias b='brew'
 alias bu='b upgrade'
 alias secs='date +%s'
+
+function keycode() {
+  pbpaste | \
+    highlight \
+    --font Inconsolata \
+    --font-size $1 \
+    --style fine_blue_darker \
+    --src-lang $2 \
+    --out-format rtf | \
+    pbcopy
+}
+
