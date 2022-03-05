@@ -1,3 +1,5 @@
+[init]
+  defaultBranch = main
 [core]
   pager = less -r
 [alias]
@@ -36,3 +38,6 @@
 	editor = /usr/bin/vim
 [remote]
   pushDefault = origin
+[user]
+  name = Mehul Kar
+  email = mehul.kar@gmail.com
