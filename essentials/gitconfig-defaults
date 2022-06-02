@@ -25,6 +25,7 @@
   up      = "!f() { git del-merged && git pr origin; }; f"
   rbi     = rebase -i
   cp      = cherry-pick
+  mdlog   = log --pretty=md
 [color]
   ui = true
   relativePaths = false
@@ -41,3 +42,5 @@
 [user]
   name = Mehul Kar
   email = mehul.kar@gmail.com
+[pretty]
+  md = tformat:* %C(bold)%C(yellow)%h %C(brightblue)%s%Creset%n%w(0,2,2)%+b%-C()%n
