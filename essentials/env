@@ -23,6 +23,7 @@ export GOPATH="$HOME/go"    # Go path
 
 # eval "$(rbenv init -)"
 
-
 export VOLTA_HOME=$HOME/.volta
 
+## Starship https://github.com/starship/starship
+eval "$(starship init zsh)"
