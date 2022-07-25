@@ -59,11 +59,7 @@ echo
 echo "Make Monokai theme the default"
 echo "    Open Terminal settings and set as default in Profiles"
 echo
-echo "Install HomeBrew:"
-echo "    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)""
-echo
-echo "Install RVM:"
-echo "    \curl -sSL https://get.rvm.io | bash -s stable"
+echo "Install HomeBrew: https://brew.sh"
 echo
 echo "Install VSCode:"
 echo "    https://code.visualstudio.com/download"
