@@ -53,16 +53,12 @@ echo "Installing monokai.terminal theme"
 rm -rf ~/tmp/monokai.terminal || true
 mkdir -p ~/tmp && git clone git@github.com:stephenway/monokai.terminal.git ~/tmp/monokai.terminal
 open ~/tmp/monokai.terminal/Monokai.terminal
+echo "Open Terminal settings and set Monokai.terminal as the default in Profiles"
 
-echo "Other TODO items:"
+echo "Other items:"
 echo
-echo "Make Monokai theme the default"
-echo "    Open Terminal settings and set as default in Profiles"
-echo
-echo "Install HomeBrew: https://brew.sh"
-echo
-echo "Install VSCode:"
-echo "    https://code.visualstudio.com/download"
-echo
-echo "Setup SSH Keys:"
-echo "    https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
+echo "- Install HomeBrew: https://brew.sh"
+echo "- Install Volta: https://docs.volta.sh/guide/getting-started"
+echo "- Install VSCode: https://code.visualstudio.com/download"
+echo "- Setup SSH Keys: https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
+echo "- Setup Go"
