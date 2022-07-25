@@ -62,9 +62,6 @@ echo
 echo "Install HomeBrew:"
 echo "    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)""
 echo
-echo "Install NVM:"
-echo "    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash"
-echo
 echo "Install RVM:"
 echo "    \curl -sSL https://get.rvm.io | bash -s stable"
 echo
