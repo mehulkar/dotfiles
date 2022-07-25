@@ -50,6 +50,7 @@ fi
 cp $GITSOURCE $GITTARGET
 
 echo "Installing monokai.terminal theme"
+rm -rf ~/tmp/monokai.terminal || true
 mkdir -p ~/tmp && git clone git@github.com:stephenway/monokai.terminal.git ~/tmp/monokai.terminal
 open ~/tmp/monokai.terminal/Monokai.terminal
 
