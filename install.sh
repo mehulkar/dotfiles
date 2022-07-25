@@ -33,7 +33,7 @@ else
 fi
 
 echo "Install oh-my-zsh"
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
 
 echo "Add startup scripts to zsh"
 echo "if [ -f $HOME/.startup ]; then; source $HOME/.startup; fi" >> ~/.zshrc
@@ -49,10 +49,14 @@ fi
 
 cp $GITSOURCE $GITTARGET
 
+echo "Installing monokai.terminal theme"
+mkdir -p ~/tmp && git clone git@github.com:stephenway/monokai.terminal.git ~/tmp/monokai.terminal
+open ~/tmp/monokai.terminal/Monokai.terminal
+
 echo "Other TODO items:"
 echo
-echo "Install Monokai terminal theme:"
-echo "    https://www.github.com/stephenway/monokai.terminal"
+echo "Make Monokai theme the default"
+echo "    Open Terminal settings and set as default in Profiles"
 echo
 echo "Install HomeBrew:"
 echo "    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)""
