@@ -23,6 +23,3 @@ export PGDATA="/usr/local/var/postgres"
 # eval "$(rbenv init -)"
 
 export VOLTA_HOME=$HOME/.volta
-
-## Starship https://github.com/starship/starship
-eval "$(starship init zsh)"
