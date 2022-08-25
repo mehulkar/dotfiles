@@ -45,3 +45,7 @@
   email = mehul.kar@gmail.com
 [pretty]
   md = tformat:* %C(bold)%C(yellow)%h %C(brightblue)%s%Creset%n%w(0,2,2)%+b%-C()%n
+[pull]
+	rebase = true
+[advice]
+	skippedCherryPicks = false
