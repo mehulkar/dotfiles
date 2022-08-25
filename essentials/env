@@ -19,7 +19,6 @@ export HISTSIZE=9999999     # increase hist size to a lot
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
 export PGDATA="/usr/local/var/postgres"
-export GOPATH="$HOME/go"    # Go path
 
 # eval "$(rbenv init -)"
 
