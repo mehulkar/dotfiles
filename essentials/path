@@ -3,16 +3,18 @@
 # Setup PATH variable
 # Source this in whatever shell profile
 
-PATH=$PATH:$HOME/bin
-PATH=$PATH:/usr/local/sbin                                                  # Homebrew formulae
-PATH=/usr/local/Cellar/python/2.7.6/bin:$PATH                               # Python
-PATH=$PATH:/usr/local/lib/python2.7/site-packages                           # Python packages
-PATH=$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin   # swiftc
-PATH="/Users/mehulkar/perl5/bin${PATH+:}${PATH}"                            # Perl
-PATH="$PATH:$HOME/.rvm/bin"                                                 # Ruby
-PATH="$PATH:$VOLTA_HOME/bin"                                                # Volta
+PATH="$PATH:$HOME/bin"
+PATH="$PATH:/usr/local/sbin"                                                  # Homebrew formulae
+PATH="$PATH:/opt/homebrew/opt/python@3.10/libexec/bin"                        # Python
+PATH="$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin"   # swiftc
+PATH="/Users/mehulkar/perl5/bin${PATH+:}${PATH}"                              # Perl
+PATH="$PATH:$HOME/.rvm/bin"                                                   # Ruby
+PATH="$PATH:$VOLTA_HOME/bin"
+
+PATH="$PATH:$GOPATH/bin"                                                    # Go
 PATH="$PATH:/usr/local/go/bin"                                              # Go
 PATH="$PATH:$HOME/go/bin"                                                   # Go
+
 PATH="$BUN_INSTALL/bin:$PATH"                                        # Bun
 
 export PATH
