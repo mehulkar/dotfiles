@@ -1,7 +1,6 @@
 [init]
   defaultBranch = main
 [core]
-  #pager = cat
   pager = less -R
 [alias]
   t       = tag -n99
