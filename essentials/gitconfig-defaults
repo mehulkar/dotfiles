@@ -1,7 +1,8 @@
 [init]
   defaultBranch = main
 [core]
-  pager = less -r
+  #pager = cat
+  pager = less -R
 [alias]
   t       = tag -n99
   r       = remote -v
@@ -19,7 +20,9 @@
   unstage = reset HEAD
   pr      = remote prune
   redo    = reset --soft 'HEAD^'
-  pu      = pull upstream master
+  pu      = pull upstream main
+  cbr     = rev-parse --abbrev-ref HEAD
+  pbr     = pull origin '$(git cbr)'
   del-merged = "!f() { git branch --merged | grep -v '\\*\\|master\\|main\\$' | xargs -n 1 git branch --delete;  }; f"
   added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
   up      = "!f() { git del-merged && git pr origin; }; f"
@@ -27,6 +30,7 @@
   cp      = cherry-pick
   mdlog   = log --pretty=md
   prco    = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
+  pick    = !git log -300 --oneline --color $1 | fzf -m --ansi --preview 'git show --color {1}' | awk '{print $1}'
 [color]
   ui = true
   relativePaths = false
@@ -44,7 +48,7 @@
   name = Mehul Kar
   email = mehul.kar@gmail.com
 [pretty]
-  md = tformat:* %C(bold)%C(yellow)%h %C(brightblue)%s%Creset%n%w(0,2,2)%+b%-C()%n
+  md = tformat:- %C(bold)%C(yellow)%h %C(brightblue)%s%Creset%n%w(0,2,2)%+b%-C()%n
 [pull]
 	rebase = true
 [advice]

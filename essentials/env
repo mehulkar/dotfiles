@@ -8,7 +8,6 @@ export ARCHFLAGS="-arch x86_64"
 
 # Open gems in VSCode. Use `bundle open <gemname>`
 export BUNDLER_EDITOR='code'
-
 export EDITOR='vim'
 
 # Pretty colors in terminal
@@ -18,8 +17,22 @@ export LESS='-XF'
 export HISTSIZE=9999999     # increase hist size to a lot
 export HISTTIMEFORMAT="%d/%m/%y %T "
 
-export PGDATA="/usr/local/var/postgres"
-
+# export PGDATA="/usr/local/var/postgres"
 # eval "$(rbenv init -)"
+# eval "$(fnm env)"
+# eval "$(fnm env --use-on-cd)"
+#export VOLTA_HOME=$HOME/.volta
 
-export VOLTA_HOME=$HOME/.volta
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# pnpm
+export PNPM_HOME="/Users/mehulkar/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
+
+# bun
+## bun completions
+[ -s "/Users/mehulkar/.bun/_bun" ] && source "/Users/mehulkar/.bun/_bun"
+export BUN_INSTALL="$HOME/.bun"

@@ -18,6 +18,9 @@ function workweek() {
   fi
 }
 
+function set_terminal_title() {
+   printf '\e]1;%s\a' "$1"
+}
 
 function optimize_workflow() {
   history                           | \
@@ -31,7 +34,7 @@ function optimize_workflow() {
 
 function dev() {
   track $1
-  cd "$HOME/dev/$1"
+  cd "$HOME/dev/$1" || exit
 }
 
 alias oss='dev oss'
@@ -80,7 +83,7 @@ function pip-cd {
   fi
 
   echo "$location"
-  cd $location/$1
+  cd $location/$1 || exit
 }
 
 function v() {
@@ -112,7 +115,6 @@ alias gp='git push origin'
 alias gpf='git push --force-with-lease'
 alias gc='git commit'
 alias gaa='git add -A'
-alias gpa='for r in $(git remote); do; echo "--> Pushing to $r"; git push $r; done'
 alias gpu='git push upstream'
 alias gl='git log --format=fuller'
 
@@ -132,6 +134,9 @@ alias e='code'
 alias b='brew'
 alias bu='b upgrade'
 alias secs='date +%s'
+
+# Github
+alias myprs="gh pr list --search='org:vercel' --author '@me' --draft=false --json=url -q '.[].url'"
 
 function keycode() {
   pbpaste | \
