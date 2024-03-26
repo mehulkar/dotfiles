@@ -50,7 +50,7 @@ function webshare() {
 }
 
 ## Shortcuts
-alias ls='ls -alHpGh'
+alias ls='ls -alHpGhF'
 alias be='bundle exec'
 #alias grep='grep -i --color'
 alias egrep='egrep -i --color'
@@ -149,3 +149,13 @@ function keycode() {
     pbcopy
 }
 
+function failingchecks() {
+  if [ -z $1 ]; then
+    echo "Provide an arg"
+    return
+  fi
+
+  REF=$(gh pr view $1 --json headRefOid | jq '.headRefOid' -r)
+  echo "ref: $REF"
+  gh api "repos/vercel/api/commits/$REF/check-runs" --jq ".check_runs[] | select(.conclusion != \"success\") | { name: .name, url: .html_url, conclusion: .conclusion }" | jq
+}
