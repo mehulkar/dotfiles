@@ -58,8 +58,6 @@ echo "Open Terminal settings and set Monokai.terminal as the default in Profiles
 echo "Other items:"
 echo
 echo "- Install HomeBrew: https://brew.sh"
-echo "- Install starship terminal prompt: https://starship.rs/guide/#🚀-installation"
 echo "- Install Volta: https://docs.volta.sh/guide/getting-started"
 echo "- Install VSCode: https://code.visualstudio.com/download"
 echo "- Setup SSH Keys: https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
-echo "- Setup Go"
