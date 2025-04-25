@@ -14,7 +14,7 @@ PATH="$PATH:$VOLTA_HOME/bin"
 PATH="$PATH:$GOPATH/bin"                                                    # Go
 PATH="$PATH:/usr/local/go/bin"                                              # Go
 PATH="$PATH:$HOME/go/bin"                                                   # Go
-
+PATH="$PATH:/opt/homebrew/bin"
 PATH="$BUN_INSTALL/bin:$PATH"                                        # Bun
 
 export PATH

@@ -20,7 +20,7 @@ export HISTTIMEFORMAT="%d/%m/%y %T "
 # export PGDATA="/usr/local/var/postgres"
 # eval "$(rbenv init -)"
 # eval "$(fnm env)"
-# eval "$(fnm env --use-on-cd)"
+eval "$(fnm env --use-on-cd)"
 #export VOLTA_HOME=$HOME/.volta
 
 export NVM_DIR="$HOME/.nvm"
@@ -36,3 +36,5 @@ export PATH="$PNPM_HOME:$PATH"
 ## bun completions
 [ -s "/Users/mehulkar/.bun/_bun" ] && source "/Users/mehulkar/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
+
+export TURBO_EXPERIMENTAL_UI=false
