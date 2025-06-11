@@ -18,6 +18,18 @@ function workweek() {
   fi
 }
 
+function dpr() {
+  gh pr create --fill-first -d "$@"
+}
+
+function mpr() {
+  gh pr create --fill-first "$@"
+}
+
+function grep() {
+  echo "use rg instead"
+}
+
 function set_terminal_title() {
    printf '\e]1;%s\a' "$1"
 }
