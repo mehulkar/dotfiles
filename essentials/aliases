@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-TRACKER_FILE=~/work-tracker.txt
-function track() {
-  echo "$1, $(date)" >> $TRACKER_FILE
-  stamp=$(cat $TRACKER_FILE | tail -n 1)
-  echo "Appended $stamp to $TRACKER_FILE"
-}
-
 function workweek() {
   if [ -d ".git" ]; then
     count=$(git log --oneline --since="1 week ago" | wc -l | xargs)
@@ -41,7 +34,6 @@ function optimize_workflow() {
 }
 
 function dev() {
-  track $1
   cd "$HOME/dev/$1" || exit
 }
 
@@ -68,7 +60,6 @@ alias vi=vim
 alias tmux='TERM=screen-256color-bce tmux'
 alias dc='docker-compose'
 alias dm='docker-machine'
-
 alias k=kubectl
 
 ########### START Python ##################
@@ -126,9 +117,27 @@ alias gaa='git add -A'
 alias gpu='git push upstream'
 alias gl='git log --format=fuller'
 
+function gitstartover() {
+  current=$(git cbr)
+  git branch -m "$current-bak-$(date +%s)"
+  git co main
+  git checkout -b "$current"
+}
+
 # Github
 alias myprs="gh pr list --search='org:vercel' --author '@me' --draft=false --json=url -q '.[].url'"
 alias go="git open"
+
+function failingchecks() {
+  if [ -z $1 ]; then
+    echo "Provide an arg"
+    return
+  fi
+
+  REF=$(gh pr view $1 --json headRefOid | jq '.headRefOid' -r)
+  echo "ref: $REF"
+  gh api "repos/vercel/api/commits/$REF/check-runs" --jq ".check_runs[] | select(.conclusion != \"success\") | { name: .name, url: .html_url, conclusion: .conclusion }" | jq
+}
 
 # middleman
 alias ms='bundle exec middleman server'
@@ -148,14 +157,6 @@ alias bu='b upgrade'
 alias secs='date +%s'
 
 
-
-function gitstartover() {
-  current=$(git cbr)
-  git branch -m "$current-bak-$(date +%s)"
-  git co main
-  git checkout -b "$current"
-}
-
 function keycode() {
   pbpaste | \
     highlight \
@@ -167,13 +168,3 @@ function keycode() {
     pbcopy
 }
 
-function failingchecks() {
-  if [ -z $1 ]; then
-    echo "Provide an arg"
-    return
-  fi
-
-  REF=$(gh pr view $1 --json headRefOid | jq '.headRefOid' -r)
-  echo "ref: $REF"
-  gh api "repos/vercel/api/commits/$REF/check-runs" --jq ".check_runs[] | select(.conclusion != \"success\") | { name: .name, url: .html_url, conclusion: .conclusion }" | jq
-}
