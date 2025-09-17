@@ -32,6 +32,7 @@
   mdlog   = log --pretty=md
   prco    = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
   pick    = !git log -300 --oneline --color $1 | fzf -m --ansi --preview 'git show --color {1}' | awk '{print $1}'
+	open = "!f() { open \"$(git config --get remote.origin.url | sed -E \"s/\\.git$//;s/git@github\\.com:/https:\\/\\/github.com\\//\")\"; }; f"
 [color]
   ui = true
   relativePaths = false

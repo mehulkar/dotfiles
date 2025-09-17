@@ -26,10 +26,6 @@ function mpr() {
   gh pr create --fill-first "$@"
 }
 
-function grep() {
-  echo "use rg instead"
-}
-
 function set_terminal_title() {
    printf '\e]1;%s\a' "$1"
 }
@@ -64,8 +60,6 @@ function webshare() {
 ## Shortcuts
 alias ls='ls -alHpGhF'
 alias be='bundle exec'
-#alias grep='grep -i --color'
-alias egrep='egrep -i --color'
 alias rc='rustc'
 alias ow=optimize_workflow
 alias ww=workweek
@@ -74,6 +68,8 @@ alias vi=vim
 alias tmux='TERM=screen-256color-bce tmux'
 alias dc='docker-compose'
 alias dm='docker-machine'
+
+alias k=kubectl
 
 ########### START Python ##################
 alias pd='python setup.py sdist'
@@ -130,6 +126,10 @@ alias gaa='git add -A'
 alias gpu='git push upstream'
 alias gl='git log --format=fuller'
 
+# Github
+alias myprs="gh pr list --search='org:vercel' --author '@me' --draft=false --json=url -q '.[].url'"
+alias go="git open"
+
 # middleman
 alias ms='bundle exec middleman server'
 alias md='bundle exec middleman build'
@@ -147,8 +147,14 @@ alias b='brew'
 alias bu='b upgrade'
 alias secs='date +%s'
 
-# Github
-alias myprs="gh pr list --search='org:vercel' --author '@me' --draft=false --json=url -q '.[].url'"
+
+
+function gitstartover() {
+  current=$(git cbr)
+  git branch -m "$current-bak-$(date +%s)"
+  git co main
+  git checkout -b "$current"
+}
 
 function keycode() {
   pbpaste | \
