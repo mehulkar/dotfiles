@@ -24,7 +24,9 @@
   pu      = pull upstream main
   cbr     = rev-parse --abbrev-ref HEAD
   pbr     = pull origin '$(git cbr)'
-  del-merged = "!f() { git branch --merged | grep -v '\\*\\|master\\|main\\$' | xargs -n 1 git branch --delete;  }; f"
+
+  # del-merged will look for merged branches and filter out ones from other worktrees
+  del-merged = "!f() { git branch --merged | grep -v '^\\*' | grep -v '^+' | grep -v 'main$' | xargs -n 1 git branch -d; }; f"
   added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
   up      = "!f() { git del-merged && git pr origin; }; f"
   rbi     = rebase -i
@@ -48,7 +50,7 @@
   pushDefault = origin
 [user]
   name = Mehul Kar
-  email = github@mehulkar.com
+  email = mehul.kar@vercel.com
 [pretty]
   md = tformat:- %C(bold)%C(yellow)%h %C(brightblue)%s%Creset%n%w(0,2,2)%+b%-C()%n
 [pull]

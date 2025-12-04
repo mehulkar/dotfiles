@@ -12,10 +12,12 @@ function workweek() {
 }
 
 function dpr() {
+  git push origin -u
   gh pr create --fill-first -d "$@"
 }
 
 function mpr() {
+  git push origin -u
   gh pr create --fill-first "$@"
 }
 
@@ -155,6 +157,7 @@ alias e='code'
 alias b='brew'
 alias bu='b upgrade'
 alias secs='date +%s'
+alias code='cursor'
 
 
 function keycode() {

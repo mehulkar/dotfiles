@@ -3,6 +3,10 @@
 # Setup PATH variable
 # Source this in whatever shell profile
 
+# opencode
+export PATH=/Users/mehulkar/.opencode/bin:$PATH
+# amp
+export PATH="$HOME/.local/bin:$PATH"
 PATH="$PATH:$HOME/bin"
 PATH="$PATH:/usr/local/sbin"                                                  # Homebrew formulae
 PATH="$PATH:/opt/homebrew/opt/python@3.10/libexec/bin"                        # Python
