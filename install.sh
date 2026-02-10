@@ -2,20 +2,43 @@
 
 set -e
 
-BACKUPDIR="$HOME/dotfiles-bak"
-rm -rf $BACKUPDIR
-mkdir -p $BACKUPDIR
+BACKUP_DIR="$HOME/dotfiles-bak"
 
-for file in essentials/*; do
-  SOURCE="$PWD/$file"
-  TARGET="$HOME/.$(basename $file)"
-  if [ -f $TARGET ] || [ -L $TARGET ] ; then
-    echo "Backing up existing $TARGET"
-    mv $TARGET $BACKUPDIR
+function start_fresh() {
+  rm -rf $BACKUP_DIR
+  mkdir -p $BACKUP_DIR
+}
+
+
+function dosymlink() {
+  local source="$1"
+  local target="$2"
+
+  if [ -f $target ] || [ -L $target ] ; then
+    echo "Backing up existing $target"
+    mv $target $BACKUP_DIR
   fi
-  echo "Symlinking $SOURCE to $HOME"
-  ln -s $SOURCE $TARGET
-done
+  echo "Symlinking $source to $HOME"
+  ln -s $source $target
+}
+
+
+
+function copy_essentials() {
+  for file in essentials/*; do
+    SOURCE="$PWD/$file"
+    TARGET="$HOME/.$(basename $file)"
+    dosymlink $SOURCE $TARGET
+  done
+}
+
+function copy_files() {
+  copy_essentials
+  dosymlink "$PWD/.claude/settings.json" "$HOME/$(basename helpful/claude.json)"
+}
+
+start_fresh
+copy_files
 
 if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
   echo "Installing VIM plugins with vundle"
