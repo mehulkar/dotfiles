@@ -23,11 +23,9 @@ function webshare() {
   npx serve
 }
 
-## Shortcuts
-# requires bat and eza to be available (via brew)
-alias cat=bat
-alias ls='eza -alHhF'
-# alias ls='ls -alHpGhF'
+## Shortcuts (guarded so missing tools don't break shell)
+command -v bat &>/dev/null && alias cat=bat
+command -v eza &>/dev/null && alias ls='eza -alHhF' || alias ls='ls -alHpGhF'
 alias be='bundle exec'
 alias rc='rustc'
 alias vup='vim +PluginInstall +qall'

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+command -v starship &>/dev/null && eval "$(starship init zsh)"
 source $HOME/.env
 source $HOME/.pythonstuff
 source $HOME/.path

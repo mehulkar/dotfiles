@@ -4,6 +4,19 @@ set -e
 
 BACKUP_DIR="$HOME/dotfiles-bak"
 
+# Brew packages required by essentials (aliases, env, gitconfig, etc.)
+BREW_DEPS="bat eza gh jq fzf highlight vim fnm starship"
+
+function install_deps() {
+  if ! command -v brew &>/dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
+  fi
+  echo "Installing brew deps: $BREW_DEPS"
+  brew install $BREW_DEPS
+}
+
 function start_fresh() {
   rm -rf $BACKUP_DIR
   mkdir -p $BACKUP_DIR
@@ -61,8 +74,8 @@ function gitconfig_stuff() {
   GITSOURCE="$PWD/gitconfig.sample"
   GITTARGET="$HOME/.gitconfig"
 
-  if [ -f $GITTARGET ] || [ -L $GITTARGET]; then
-    mv $GITTARGET $BACKUPDIR
+  if [ -f $GITTARGET ] || [ -L $GITTARGET ]; then
+    mv $GITTARGET $BACKUP_DIR
   fi
 
   cp $GITSOURCE $GITTARGET
@@ -76,9 +89,18 @@ function terminal_theme() {
   echo "Open Terminal settings and set Monokai.terminal as the default in Profiles"
 }
 
+install_deps
 start_fresh
 copy_essentials
-dosymlink "$PWD/$(basename helpful/claude-settings.json)" "$HOME/.claude/settings.json"
+mkdir -p "$HOME/.claude"
+dosymlink "$PWD/helpful/claude-settings.json" "$HOME/.claude/settings.json"
+mkdir -p "$HOME/.config"
+if [ -f "$HOME/.config/starship.toml" ] || [ -L "$HOME/.config/starship.toml" ]; then
+  echo "Backing up existing starship.toml"
+  mv "$HOME/.config/starship.toml" $BACKUP_DIR
+fi
+echo "Symlinking starship.toml to ~/.config"
+ln -s "$PWD/helpful/starship.toml" "$HOME/.config/starship.toml"
 install_vim_plugins
 default_shell
 zhrc_stuff
@@ -86,7 +108,6 @@ gitconfig_stuff
 terminal_theme
 
 echo "Other items:"
-echo
-echo "- Install HomeBrew: https://brew.sh"
 echo "- Install VSCode: https://code.visualstudio.com/download"
 echo "- Setup SSH Keys: https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
+echo "- Optional: pnpm (npm i -g pnpm), bun (curl -fsSL https://bun.sh/install | bash)"
