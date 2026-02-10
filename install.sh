@@ -22,7 +22,7 @@ function start_fresh() {
   mkdir -p $BACKUP_DIR
 }
 
-function dosymlink() {
+function make_symlink() {
   local source="$1"
   local target="$2"
 
@@ -38,7 +38,7 @@ function copy_essentials() {
   for file in essentials/*; do
     SOURCE="$PWD/$file"
     TARGET="$HOME/.$(basename $file)"
-    dosymlink $SOURCE $TARGET
+    make_symlink $SOURCE $TARGET
   done
 }
 
@@ -61,7 +61,7 @@ function default_shell() {
   fi
 }
 
-function zhrc_stuff() {
+function zshrc_stuff() {
   echo "Install oh-my-zsh"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
   echo "Add startup scripts to zsh"
@@ -71,14 +71,14 @@ function zhrc_stuff() {
 
 # Copy sample gitconfig
 function gitconfig_stuff() {
-  GITSOURCE="$PWD/gitconfig.sample"
-  GITTARGET="$HOME/.gitconfig"
+  local source="$PWD/gitconfig.sample"
+  local target="$HOME/.gitconfig"
 
-  if [ -f $GITTARGET ] || [ -L $GITTARGET ]; then
-    mv $GITTARGET $BACKUP_DIR
+  if [ -f "$target" ] || [ -L "$target" ]; then
+    mv "$target" "$BACKUP_DIR"
   fi
 
-  cp $GITSOURCE $GITTARGET
+  cp "$source" "$target"
 }
 
 function terminal_theme() {
@@ -89,21 +89,33 @@ function terminal_theme() {
   echo "Open Terminal settings and set Monokai.terminal as the default in Profiles"
 }
 
+function starship_stuff() {
+  mkdir -p "$HOME/.config"
+  if [ -f "$HOME/.config/starship.toml" ] || [ -L "$HOME/.config/starship.toml" ]; then
+    echo "Backing up existing starship.toml"
+    mv "$HOME/.config/starship.toml" "$BACKUP_DIR"
+  fi
+  echo "Symlinking starship.toml to ~/.config"
+  ln -s "$PWD/helpful/starship.toml" "$HOME/.config/starship.toml"
+}
+
+function claude_stuff() {
+  mkdir -p "$HOME/.claude"
+  if [ -f "$HOME/.claude/settings.json" ] || [ -L "$HOME/.claude/settings.json" ]; then
+    echo "Backing up existing claude settings.json"
+    mv "$HOME/.claude/settings.json" "$BACKUP_DIR/claude-settings.json"
+  fi
+  make_symlink "$PWD/helpful/claude-settings.json" "$HOME/.claude/settings.json"
+}
+
 install_deps
 start_fresh
 copy_essentials
-mkdir -p "$HOME/.claude"
-dosymlink "$PWD/helpful/claude-settings.json" "$HOME/.claude/settings.json"
-mkdir -p "$HOME/.config"
-if [ -f "$HOME/.config/starship.toml" ] || [ -L "$HOME/.config/starship.toml" ]; then
-  echo "Backing up existing starship.toml"
-  mv "$HOME/.config/starship.toml" $BACKUP_DIR
-fi
-echo "Symlinking starship.toml to ~/.config"
-ln -s "$PWD/helpful/starship.toml" "$HOME/.config/starship.toml"
+starship_stuff
+claude_stuff
 install_vim_plugins
 default_shell
-zhrc_stuff
+zshrc_stuff
 gitconfig_stuff
 terminal_theme
 
