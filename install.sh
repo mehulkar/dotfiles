@@ -31,7 +31,7 @@ function copy_essentials() {
 
 function copy_files() {
   copy_essentials
-  dosymlink "$PWD/.claude/settings.json" "$HOME/$(basename helpful/claude.json)"
+  dosymlink "$PWD/.claude/settings.json" "$HOME/$(basename helpful/claude-settings.json)"
 }
 
 function install_vim_plugins() {
