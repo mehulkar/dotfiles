@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "opus",
+  "permissions": {
+    "allow": [
+      "Bash(bash:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(node:*)",
+      "Bash(python3:*)",
+      "Bash(tar:*)",
+      "Bash(xargs:*)",
+      "Bash(datadog-query:*)",
+      "Bash(datadog-query aggregate-logs:*)",
+      "Bash(datadog-query query-metrics:*)",
+      "Bash(datadog-query search-logs:*)",
+      "Bash(datadog-query search-traces:*)",
+      "Bash(gh api:*)",
+      "Bash(gh pr:*)",
+      "Bash(git add:*)",
+      "Bash(git log:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git push:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm install:*)",
+      "Bash(turbo:*)"
+    ]
+  }
+}
