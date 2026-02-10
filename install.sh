@@ -29,11 +29,6 @@ function copy_essentials() {
   done
 }
 
-function copy_files() {
-  copy_essentials
-  dosymlink "$PWD/.claude/settings.json" "$HOME/$(basename helpful/claude-settings.json)"
-}
-
 function install_vim_plugins() {
   if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
     echo "Installing VIM plugins with vundle"
@@ -82,7 +77,8 @@ function terminal_theme() {
 }
 
 start_fresh
-copy_files
+copy_essentials
+dosymlink "$PWD/.claude/settings.json" "$HOME/$(basename helpful/claude-settings.json)"
 install_vim_plugins
 default_shell
 zhrc_stuff
