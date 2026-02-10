@@ -3,6 +3,10 @@
 [core]
   pager = less -R
   fsmonitor = true
+	editor = /usr/bin/vim
+  untrackedCache = true
+[index]
+  threads = true
 [alias]
   t       = tag -n99
   r       = remote -v
@@ -15,7 +19,7 @@
   b       = branch
   bra     = branch -a
   brm     = branch --merged
-  l       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+  l       = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
   ll      = log --date=format-local:'%Y-%m-%d %H:%M:%S %z' --pretty=format:'%Cgreen(%cd)%Creset %Cred%h%Creset -%C(yellow)%d%Creset %s %C(bold blue)<%an>%Creset'
   last    = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'--abbrev-commit --date=relative -1
   unstage = reset HEAD
@@ -44,8 +48,6 @@
 	default = current
 [branch]
   autosetuprebase=always
-[core]
-	editor = /usr/bin/vim
 [remote]
   pushDefault = origin
 [user]

@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
 
-function workweek() {
-  if [ -d ".git" ]; then
-    count=$(git log --oneline --since="1 week ago" | wc -l | xargs)
-    echo "Stats since 1 week ago"
-    git diff HEAD~$count --shortstat
-  else
-    echo "Not a git directory"
-    exit 1
-  fi
-}
-
 function dpr() {
   git push origin -u
   gh pr create --fill-first -d "$@"
@@ -21,19 +10,6 @@ function mpr() {
   gh pr create --fill-first "$@"
 }
 
-function set_terminal_title() {
-   printf '\e]1;%s\a' "$1"
-}
-
-function optimize_workflow() {
-  history                           | \
-    awk '{print $4 " " $5}'         | \
-    awk 'BEGIN {FS="|"} {print $1}' | \
-    sort                            | \
-    uniq -c                         | \
-    sort -rn                        | \
-    head -30
-}
 
 function dev() {
   cd "$HOME/dev/$1" || exit
@@ -43,73 +19,23 @@ alias oss='dev oss'
 alias dd='dev dotfiles'
 alias dp='dev playground'
 
-function bigdir() {
-  du -hsx * | sort -r | head -10
-}
-
 function webshare() {
   npx serve
 }
 
 ## Shortcuts
-alias ls='ls -alHpGhF'
+# requires bat and eza to be available (via brew)
+alias cat=bat
+alias ls='eza -alHhF'
+# alias ls='ls -alHpGhF'
 alias be='bundle exec'
 alias rc='rustc'
-alias ow=optimize_workflow
-alias ww=workweek
 alias vup='vim +PluginInstall +qall'
 alias vi=vim
 alias tmux='TERM=screen-256color-bce tmux'
 alias dc='docker-compose'
 alias dm='docker-machine'
 alias k=kubectl
-
-########### START Python ##################
-alias pd='python setup.py sdist'
-alias pup='python setup.py sdist upload'
-alias pst='python setup.py test'
-
-function pip-cd {
-  USAGE="Usage: pip-show <pacakgename>"
-  if [ -z $1  ]; then
-    echo $USAGE
-    return 1
-  fi
-
-  location=$(pip show $1 | grep Location | awk '{ print $2 }')
-  if [ -z $location ]; then
-    echo "$1 not found"
-    echo $USAGE
-    return 1
-  fi
-
-  echo "$location"
-  cd $location/$1 || exit
-}
-
-function v() {
-  name="${1-env}"
-
-  if [ "$name" ==  "off" ]; then
-    deactivate
-    return $?
-  fi
-
-  echo "Activating $name"
-  virtualenv $name > /dev/null
-  source "$name/bin/activate"
-}
-
-alias f='flake8'
-
-function flist() {
-  flake8 | awk '{print $2}' | sort -u
-}
-
-function fl {
-  flake8 --select $1
-}
-############ END Python ##################
 
 # Git shortcuts
 alias gp='git push origin'
@@ -157,7 +83,7 @@ alias e='code'
 alias b='brew'
 alias bu='b upgrade'
 alias secs='date +%s'
-alias code='cursor'
+#alias code='cursor'
 
 
 function keycode() {

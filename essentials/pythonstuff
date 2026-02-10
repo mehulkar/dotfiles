@@ -1,0 +1,44 @@
+alias pd='python setup.py sdist'
+alias pup='python setup.py sdist upload'
+alias pst='python setup.py test'
+
+function pip-cd {
+  USAGE="Usage: pip-show <pacakgename>"
+  if [ -z $1  ]; then
+    echo $USAGE
+    return 1
+  fi
+
+  location=$(pip show $1 | grep Location | awk '{ print $2 }')
+  if [ -z $location ]; then
+    echo "$1 not found"
+    echo $USAGE
+    return 1
+  fi
+
+  echo "$location"
+  cd $location/$1 || exit
+}
+
+function v() {
+  name="${1-env}"
+
+  if [ "$name" ==  "off" ]; then
+    deactivate
+    return $?
+  fi
+
+  echo "Activating $name"
+  virtualenv $name > /dev/null
+  source "$name/bin/activate"
+}
+
+alias f='flake8'
+
+function flist() {
+  flake8 | awk '{print $2}' | sort -u
+}
+
+function fl {
+  flake8 --select $1
+}

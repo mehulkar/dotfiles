@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 source $HOME/.env
+source $HOME/.pythonstuff
 source $HOME/.path
 source $HOME/.aliases
 
