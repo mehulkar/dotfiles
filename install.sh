@@ -18,27 +18,27 @@ function install_deps() {
 }
 
 function start_fresh() {
-  rm -rf $BACKUP_DIR
-  mkdir -p $BACKUP_DIR
+  rm -rf "$BACKUP_DIR"
+  mkdir -p "$BACKUP_DIR"
 }
 
 function make_symlink() {
   local source="$1"
   local target="$2"
 
-  if [ -f $target ] || [ -L $target ] ; then
+  if [ -f "$target" ] || [ -L "$target" ] ; then
     echo "Backing up existing $target"
-    mv $target $BACKUP_DIR
+    mv "$target" "$BACKUP_DIR"
   fi
   echo "Symlinking $source to $HOME"
-  ln -s $source $target
+  ln -s "$source" "$target"
 }
 
 function copy_essentials() {
   for file in essentials/*; do
-    SOURCE="$PWD/$file"
-    TARGET="$HOME/.$(basename $file)"
-    make_symlink $SOURCE $TARGET
+    local source="$PWD/$file"
+    local target="$HOME/.$(basename $file)"
+    make_symlink "$source" "$target"
   done
 }
 
