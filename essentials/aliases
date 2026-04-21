@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
 function dpr() {
+  echo "pushing to origin"
   git push origin -u
+  echo "creating draft pr"
   gh pr create --fill-first -d "$@"
 }
 
 function mpr() {
+  echo "pushing to origin"
   git push origin -u
+  echo "creating pr"
   gh pr create --fill-first "$@"
 }
 
@@ -29,7 +33,7 @@ command -v eza &>/dev/null && alias ls='eza -alHhF' || alias ls='ls -alHpGhF'
 alias be='bundle exec'
 alias rc='rustc'
 alias vup='vim +PluginInstall +qall'
-alias vi=vim
+alias vim=nvim
 alias tmux='TERM=screen-256color-bce tmux'
 alias dc='docker-compose'
 alias dm='docker-machine'

@@ -1,6 +1,6 @@
 # https://starship.rs/config/
 
-command_timeout = 1000
+command_timeout = 1500
 
 format = """
 $username\
