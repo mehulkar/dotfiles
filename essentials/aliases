@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+delete_worktrees() {
+  ./git-delete-worktrees "$@"
+}
+
 function dpr() {
   echo "pushing to origin"
   git push origin -u
