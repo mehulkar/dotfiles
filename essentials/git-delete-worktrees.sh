@@ -2,7 +2,10 @@
 
 set -euo pipefail
 
-mapfile -t worktrees < <(git worktree list | awk '{print $1}' | tail -n +2)
+worktrees=()
+while IFS= read -r line; do
+  worktrees+=("$line")
+done < <(git worktree list | awk '{print $1}' | tail -n +2)
 
 if [ ${#worktrees[@]} -eq 0 ]; then
   echo "No worktrees found."
@@ -24,15 +27,15 @@ for wt in "${worktrees[@]}"; do
 done
 
 echo
-echo "Summary:"
-for wt in "${to_delete[@]}"; do
-  echo "  $wt"
-done
-
 if [ ${#to_delete[@]} -eq 0 ]; then
   echo "Nothing selected for deletion."
   exit 0
 fi
+
+echo "Summary:"
+for wt in "${to_delete[@]}"; do
+  echo "  $wt"
+done
 
 read -rp "Proceed with deletion? [y/N]: " confirm
 case "$confirm" in
