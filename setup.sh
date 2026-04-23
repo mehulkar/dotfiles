@@ -146,6 +146,76 @@ function claude_stuff() {
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
 }
 
+# macOS system preferences captured from this machine via `defaults read`.
+# Only values that differ from Apple's ship defaults are written here.
+# Skipped on non-Darwin hosts.
+function macos_defaults() {
+  if [ "$(uname)" != "Darwin" ]; then
+    echo "Not macOS; skipping defaults"
+    return
+  fi
+
+  read -r -p "Apply macOS system preferences? [y/N] " reply
+  case "$reply" in
+    [yY]|[yY][eE][sS]) ;;
+    *) echo "Skipping macOS defaults"; return ;;
+  esac
+
+  # Close System Settings so it doesn't overwrite values on quit
+  osascript -e 'tell application "System Settings" to quit' 2>/dev/null || true
+
+  # --- Global (NSGlobalDomain) ---
+  # Auto-switch light/dark appearance with sunrise/sunset
+  defaults write NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
+  # Fast key repeat (15 = delay before repeat, 2 = repeat rate; lower is faster)
+  defaults write NSGlobalDomain InitialKeyRepeat -int 15
+  defaults write NSGlobalDomain KeyRepeat -int 2
+
+  # --- Dock ---
+  defaults write com.apple.dock tilesize -int 72
+  defaults write com.apple.dock show-recents -bool false
+  # Hot corner: bottom-right -> Quick Note (14). 1 = disabled.
+  defaults write com.apple.dock wvous-br-corner -int 14
+  defaults write com.apple.dock wvous-br-modifier -int 0
+
+  # --- Finder ---
+  # Default view: columns (clmv). Alternatives: icnv, Nlsv, glyv.
+  defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+  # New Finder windows open to the Desktop (PfDe). PfHm = home, PfLo = recents.
+  defaults write com.apple.finder NewWindowTarget -string "PfDe"
+
+  # --- Screenshots ---
+  defaults write com.apple.screencapture disable-sound -bool true
+
+  # --- Menu bar clock ---
+  # Hide the date (day-of-week + time only)
+  defaults write com.apple.menuextra.clock ShowDate -int 0
+  defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+  defaults write com.apple.menuextra.clock ShowAMPM -bool true
+
+  # --- Trackpad (built-in + Bluetooth) ---
+  for domain in com.apple.AppleMultitouchTrackpad com.apple.driver.AppleBluetoothMultitouch.trackpad; do
+    defaults write "$domain" Clicking -bool true
+    defaults write "$domain" TrackpadRightClick -bool true
+    defaults write "$domain" TrackpadThreeFingerDrag -bool true
+    # Disable three-finger tap (look up); two-finger double-tap handles lookup
+    defaults write "$domain" TrackpadThreeFingerTapGesture -int 0
+    defaults write "$domain" TrackpadTwoFingerDoubleTapGesture -bool true
+  done
+  # Enable tap-to-click at the login screen and for new users
+  defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+  defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+  # Force Touch
+  defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true
+
+  echo "Restarting affected services (Dock, Finder, SystemUIServer)…"
+  for app in Dock Finder SystemUIServer; do
+    killall "$app" 2>/dev/null || true
+  done
+  echo "Some changes require a logout/restart to fully apply."
+}
+
 install_deps
 start_fresh
 copy_essentials
@@ -156,6 +226,7 @@ default_shell
 zshrc_stuff
 gitconfig_stuff
 terminal_theme
+macos_defaults
 
 echo "Other items:"
 echo "- Install VSCode: https://code.visualstudio.com/download"
