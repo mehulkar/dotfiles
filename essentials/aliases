@@ -56,7 +56,6 @@ function gitstartover() {
 
 # Github
 alias myprs="gh pr list --search='org:vercel' --author '@me' --draft=false --json=url -q '.[].url'"
-alias go="git open"
 
 function failingchecks() {
   if [ -z $1 ]; then

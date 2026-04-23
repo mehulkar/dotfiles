@@ -3,7 +3,7 @@
 [core]
   pager = less -R
   fsmonitor = true
-	editor = /usr/bin/vim
+  editor = /usr/bin/vim
   untrackedCache = true
 [index]
   threads = true
@@ -28,7 +28,6 @@
   pu      = pull upstream main
   cbr     = rev-parse --abbrev-ref HEAD
   pbr     = pull origin '$(git cbr)'
-
   # del-merged will look for merged branches and filter out ones from other worktrees
   del-merged = "!f() { git branch --merged | grep -v '^\\*' | grep -v '^+' | grep -v 'main$' | xargs -n 1 git branch -d; }; f"
   added   = log --follow --date=short --pretty=format:%ad --diff-filter=A --
@@ -39,14 +38,14 @@
   update  = "!f() { git fetch origin main:main && git merge main; }; f"
   prco    = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
   pick    = !git log -300 --oneline --color $1 | fzf -m --ansi --preview 'git show --color {1}' | awk '{print $1}'
-	open = "!f() { open \"$(git config --get remote.origin.url | sed -E \"s/\\.git$//;s/git@github\\.com:/https:\\/\\/github.com\\//\")\"; }; f"
+  open = "!f() { open \"$(git config --get remote.origin.url | sed -E \"s/\\.git$//;s/git@github\\.com:/https:\\/\\/github.com\\//\")\"; }; f"
 [color]
   ui = true
   relativePaths = false
 [help]
   autocorrect = 1
 [push]
-	default = current
+  default = current
 [branch]
   autosetuprebase=always
 [remote]
@@ -57,8 +56,8 @@
 [pretty]
   md = tformat:- %C(bold)%C(yellow)%h %C(brightblue)%s%Creset%n%w(0,2,2)%+b%-C()%n
 [pull]
-	rebase = true
-[advice]
-	skippedCherryPicks = false
+  rebase = true
+[advice]  
+  skippedCherryPicks = false
 [fetch]
-	writeCommitGraph = true
+  writeCommitGraph = true

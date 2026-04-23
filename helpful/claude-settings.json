@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "apiKeyHelper": "security find-generic-password -a \"$USER\" -s \"VERCEL_AI_GATEWAY_KEY\" -w",
   "env": {
     "ANTHROPIC_BASE_URL": "https://ai-gateway.vercel.sh"
   },
-  "apiKeyHelper": "security find-generic-password -a \"$USER\" -s \"VERCEL_AI_GATEWAY_KEY\" -w",
   "permissions": {
     "allow": [
       "Bash(bash:*)",
@@ -40,7 +40,8 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
     "vercel-plugin@vercel-vercel-plugin": true,
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "vercel-vercel-plugin": {
@@ -51,5 +52,6 @@
     }
   },
   "effortLevel": "medium",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true
 }
