@@ -93,18 +93,36 @@ function zshrc_stuff() {
   fi
 }
 
-# Copy sample gitconfig as a starting point (skip if one already exists)
+# Copy sample gitconfig as a starting point. If one already exists and differs
+# from the sample, prompt before overwriting (and back up the original).
 function gitconfig_stuff() {
   local source="$SCRIPT_DIR/gitconfig.sample"
   local target="$HOME/.gitconfig"
 
-  if [ -f "$target" ] || [ -L "$target" ]; then
-    echo "~/.gitconfig already exists; leaving it alone"
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+    echo "Seeding ~/.gitconfig from sample"
+    cp "$source" "$target"
     return
   fi
 
-  echo "Seeding ~/.gitconfig from sample"
-  cp "$source" "$target"
+  if cmp -s "$source" "$target"; then
+    echo "~/.gitconfig matches sample; leaving it alone"
+    return
+  fi
+
+  echo "~/.gitconfig differs from $source:"
+  diff -u "$target" "$source" || true
+  read -r -p "Overwrite ~/.gitconfig with the sample? [y/N] " reply
+  case "$reply" in
+    [yY]|[yY][eE][sS])
+      echo "Backing up existing ~/.gitconfig"
+      mv "$target" "$BACKUP_DIR/"
+      cp "$source" "$target"
+      ;;
+    *)
+      echo "Leaving ~/.gitconfig alone"
+      ;;
+  esac
 }
 
 function terminal_theme() {
