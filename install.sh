@@ -2,7 +2,10 @@
 
 set -e
 
-BACKUP_DIR="$HOME/dotfiles-bak"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+BACKUP_DIR="$HOME/dotfiles-bak/$(date +%Y%m%d-%H%M%S)"
 
 # Brew packages required by essentials (aliases, env, gitconfig, etc.)
 BREW_DEPS="bat eza gh jq fzf highlight vim fnm starship"
@@ -18,27 +21,34 @@ function install_deps() {
 }
 
 function start_fresh() {
-  rm -rf "$BACKUP_DIR"
   mkdir -p "$BACKUP_DIR"
+  echo "Backups will go to $BACKUP_DIR"
 }
 
 function make_symlink() {
   local source="$1"
   local target="$2"
 
-  if [ -f "$target" ] || [ -L "$target" ] ; then
-    echo "Backing up existing $target"
-    mv "$target" "$BACKUP_DIR"
+  if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+    return
   fi
-  echo "Symlinking $source to $HOME"
+
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    echo "Backing up existing $target"
+    mv "$target" "$BACKUP_DIR/"
+  fi
+  echo "Symlinking $source -> $target"
   ln -s "$source" "$target"
 }
 
 function copy_essentials() {
   for file in essentials/*; do
-    local source="$PWD/$file"
-    local target="$HOME/.$(basename $file)"
+    local source="$SCRIPT_DIR/$file"
+    local target="$HOME/.$(basename "$file")"
     make_symlink "$source" "$target"
+    if [[ "$file" == *.sh ]]; then
+      chmod +x "$source"
+    fi
   done
 }
 
@@ -62,28 +72,47 @@ function default_shell() {
 }
 
 function zshrc_stuff() {
-  echo "Install oh-my-zsh"
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
-  echo "Add startup scripts to zsh"
-  echo "if [ -f $HOME/.startup ]; then; source $HOME/.startup; fi" >> ~/.zshrc
-  echo "if [ -f $HOME/.secret ]; then; source $HOME/.secret; fi" >> ~/.zshrc
+  if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Install oh-my-zsh"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
+  else
+    echo "oh-my-zsh already installed"
+  fi
+
+  touch ~/.zshrc
+  local startup_line="if [ -f $HOME/.startup ]; then; source $HOME/.startup; fi"
+  local secret_line="if [ -f $HOME/.secret ]; then; source $HOME/.secret; fi"
+
+  if ! grep -qF -- "$startup_line" ~/.zshrc; then
+    echo "Adding .startup source line to ~/.zshrc"
+    echo "$startup_line" >> ~/.zshrc
+  fi
+  if ! grep -qF -- "$secret_line" ~/.zshrc; then
+    echo "Adding .secret source line to ~/.zshrc"
+    echo "$secret_line" >> ~/.zshrc
+  fi
 }
 
-# Copy sample gitconfig
+# Copy sample gitconfig as a starting point (skip if one already exists)
 function gitconfig_stuff() {
-  local source="$PWD/gitconfig.sample"
+  local source="$SCRIPT_DIR/gitconfig.sample"
   local target="$HOME/.gitconfig"
 
   if [ -f "$target" ] || [ -L "$target" ]; then
-    mv "$target" "$BACKUP_DIR"
+    echo "~/.gitconfig already exists; leaving it alone"
+    return
   fi
 
+  echo "Seeding ~/.gitconfig from sample"
   cp "$source" "$target"
 }
 
 function terminal_theme() {
+  if [ -d ~/tmp/monokai.terminal ]; then
+    echo "monokai.terminal already cloned; skipping"
+    return
+  fi
   echo "Installing monokai.terminal theme"
-  rm -rf ~/tmp/monokai.terminal || true
   mkdir -p ~/tmp && git clone git@github.com:stephenway/monokai.terminal.git ~/tmp/monokai.terminal
   open ~/tmp/monokai.terminal/Monokai.terminal
   echo "Open Terminal settings and set Monokai.terminal as the default in Profiles"
@@ -91,21 +120,12 @@ function terminal_theme() {
 
 function starship_stuff() {
   mkdir -p "$HOME/.config"
-  if [ -f "$HOME/.config/starship.toml" ] || [ -L "$HOME/.config/starship.toml" ]; then
-    echo "Backing up existing starship.toml"
-    mv "$HOME/.config/starship.toml" "$BACKUP_DIR"
-  fi
-  echo "Symlinking starship.toml to ~/.config"
-  ln -s "$PWD/helpful/starship.toml" "$HOME/.config/starship.toml"
+  make_symlink "$SCRIPT_DIR/helpful/starship.toml" "$HOME/.config/starship.toml"
 }
 
 function claude_stuff() {
   mkdir -p "$HOME/.claude"
-  if [ -f "$HOME/.claude/settings.json" ] || [ -L "$HOME/.claude/settings.json" ]; then
-    echo "Backing up existing claude settings.json"
-    mv "$HOME/.claude/settings.json" "$BACKUP_DIR/claude-settings.json"
-  fi
-  make_symlink "$PWD/helpful/claude-settings.json" "$HOME/.claude/settings.json"
+  make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
 }
 
 install_deps
