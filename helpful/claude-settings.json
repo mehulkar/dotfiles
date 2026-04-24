@@ -52,6 +52,5 @@
     }
   },
   "effortLevel": "medium",
-  "skipDangerousModePermissionPrompt": true,
-  "skipAutoPermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true
 }

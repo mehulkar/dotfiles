@@ -43,8 +43,20 @@ case "$confirm" in
     echo
     echo "Deleting..."
     for wt in "${to_delete[@]}"; do
-      git worktree remove "$wt"
+      if ! git worktree remove "$wt" 2>/tmp/git-wt-remove-err; then
+        cat /tmp/git-wt-remove-err >&2
+        read -rp "Retry with --force? [y/N]: " force_answer
+        case "$force_answer" in
+          [yY][eE][sS]|[yY])
+            git worktree remove --force "$wt"
+            ;;
+          *)
+            echo "Skipped '$wt'."
+            ;;
+        esac
+      fi
     done
+    rm -f /tmp/git-wt-remove-err
     echo "Done."
     ;;
   *)
