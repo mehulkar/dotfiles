@@ -1,0 +1,15 @@
+# This is the configuration file for Ghostty.
+#
+# Symlinked here from dotfiles/helpful/ghostty-config by setup.sh to
+# ~/Library/Application Support/com.mitchellh.ghostty/config
+#
+# Run `ghostty +show-config --default --docs` to view a list of
+# all available config options and their default values.
+#
+# Additionally, each config option is also explained in detail
+# on Ghostty's website, at https://ghostty.org/docs/config.
+
+keybind = shift+enter=text:\x1b\r
+keybind = cmd+shift+i=prompt_tab_title
+
+shell-integration = zsh

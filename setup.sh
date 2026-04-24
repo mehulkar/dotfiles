@@ -9,6 +9,7 @@ BACKUP_DIR="$HOME/dotfiles-bak/$(date +%Y%m%d-%H%M%S)"
 
 # Brew packages required by essentials (aliases, env, gitconfig, etc.)
 BREW_DEPS="bat eza gh jq fzf highlight vim fnm starship"
+CASK_DEPS="ghostty"
 
 function install_deps() {
   if ! command -v brew &>/dev/null; then
@@ -18,6 +19,8 @@ function install_deps() {
   fi
   echo "Installing brew deps: $BREW_DEPS"
   brew install $BREW_DEPS
+  echo "Installing cask deps: $CASK_DEPS"
+  brew install --cask $CASK_DEPS
 }
 
 function start_fresh() {
@@ -146,6 +149,12 @@ function claude_stuff() {
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
 }
 
+function ghostty_stuff() {
+  local dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
+  mkdir -p "$dir"
+  make_symlink "$SCRIPT_DIR/helpful/ghostty-config" "$dir/config"
+}
+
 # macOS system preferences captured from this machine via `defaults read`.
 # Only values that differ from Apple's ship defaults are written here.
 # Skipped on non-Darwin hosts.
@@ -221,6 +230,7 @@ start_fresh
 copy_essentials
 starship_stuff
 claude_stuff
+ghostty_stuff
 install_vim_plugins
 default_shell
 zshrc_stuff
@@ -232,3 +242,4 @@ echo "Other items:"
 echo "- Install VSCode: https://code.visualstudio.com/download"
 echo "- Setup SSH Keys: https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
 echo "- Optional: pnpm (npm i -g pnpm), bun (curl -fsSL https://bun.sh/install | bash)"
+echo "- Set Ghostty as default terminal: open Ghostty, then Ghostty menu > Services > Make Ghostty the default terminal (macOS has no CLI for this)"
