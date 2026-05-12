@@ -11,8 +11,9 @@ configuration, it also vendors personal AI agent instructions and settings
 - `essentials/` — files symlinked into `$HOME` (aliases, env, path, vimrc,
   tmux.conf, gitconfig-defaults, startup, etc.).
 - `helpful/` — configs that live outside `$HOME` or need different placement:
-  - `claude-CLAUDE.md` → symlinked to `~/.claude/CLAUDE.md` (global Claude Code
-    instructions that apply to every project).
+  - `AGENTS.md` → symlinked to `~/AGENTS.md`, `~/.agents/AGENTS.md`, and
+    `~/.claude/CLAUDE.md` (global agent instructions that apply to every
+    project, across multiple agent tools).
   - `claude-settings.json` → symlinked to `~/.claude/settings.json`.
   - `starship.toml`, `git-completion.bash`, `git-prompt`, `ps1`.
 - `gitconfig.sample` — starter `~/.gitconfig`. `setup.sh` seeds it on first
@@ -22,9 +23,10 @@ configuration, it also vendors personal AI agent instructions and settings
 
 ## Notes for agents working in this repo
 
-- Edits to `helpful/claude-CLAUDE.md` change the global Claude Code behavior on
-  this machine once `setup.sh` has run (it's symlinked to `~/.claude/CLAUDE.md`).
-  Treat changes there as affecting every future session, not just this repo.
+- Edits to `helpful/AGENTS.md` change the global agent behavior on this machine
+  once `setup.sh` has run (it's symlinked to `~/AGENTS.md`, `~/.agents/AGENTS.md`,
+  and `~/.claude/CLAUDE.md`). Treat changes there as affecting every future
+  session, not just this repo.
 - `essentials/*` files are symlinked without the leading dot — `aliases`
   becomes `~/.aliases`, `vimrc` becomes `~/.vimrc`, etc. Name new files
   accordingly.

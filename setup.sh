@@ -146,7 +146,11 @@ function starship_stuff() {
 
 function claude_stuff() {
   mkdir -p "$HOME/.claude"
+  mkdir -p "$HOME/.agents"
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
+  make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/AGENTS.md"
+  make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.agents/AGENTS.md"
+  make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 }
 
 function ghostty_stuff() {
