@@ -11,21 +11,51 @@ BACKUP_DIR="$HOME/dotfiles-bak/$(date +%Y%m%d-%H%M%S)"
 BREW_DEPS="bat eza gh jq fzf highlight vim fnm starship"
 CASK_DEPS="ghostty"
 
+# --- Pretty output helpers --------------------------------------------------
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+  C_RESET=$'\033[0m'
+  C_BOLD=$'\033[1m'
+  C_DIM=$'\033[2m'
+  C_CYAN=$'\033[36m'
+  C_GREEN=$'\033[32m'
+  C_YELLOW=$'\033[33m'
+else
+  C_RESET=''; C_BOLD=''; C_DIM=''; C_CYAN=''; C_GREEN=''; C_YELLOW=''
+fi
+
+_short() { printf '%s' "${1/#$HOME/~}"; }
+
+section() { printf '\n%s==>%s %s%s%s\n' "$C_CYAN" "$C_RESET" "$C_BOLD" "$1" "$C_RESET"; }
+ok()      { printf '    %s✓%s %s%s%s\n'  "$C_GREEN"  "$C_RESET" "$C_DIM" "$1" "$C_RESET"; }
+act()     { printf '    %s→%s %s\n'      "$C_GREEN"  "$C_RESET" "$1"; }
+warn()    { printf '    %s!%s %s\n'      "$C_YELLOW" "$C_RESET" "$1"; }
+info()    { printf '    %s\n' "$1"; }
+
 function install_deps() {
+  section "Homebrew packages"
   if ! command -v brew &>/dev/null; then
-    echo "Installing Homebrew..."
+    act "Installing Homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
   fi
-  echo "Installing brew deps: $BREW_DEPS"
+  act "brew: $BREW_DEPS"
   brew install $BREW_DEPS
-  echo "Installing cask deps: $CASK_DEPS"
-  brew install --cask $CASK_DEPS
+  for cask in $CASK_DEPS; do
+    if brew list --cask "$cask" &>/dev/null; then
+      ok "cask $cask (already installed)"
+      continue
+    fi
+    if ! brew install --cask "$cask"; then
+      warn "cask $cask install failed; trying --adopt"
+      brew install --cask --adopt "$cask" || warn "cask $cask adopt failed; leaving as-is"
+    fi
+  done
 }
 
 function start_fresh() {
   mkdir -p "$BACKUP_DIR"
-  echo "Backups will go to $BACKUP_DIR"
+  section "Backups"
+  info "$(_short "$BACKUP_DIR")"
 }
 
 function make_symlink() {
@@ -33,18 +63,20 @@ function make_symlink() {
   local target="$2"
 
   if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+    ok "$(_short "$target") (linked)"
     return
   fi
 
   if [ -e "$target" ] || [ -L "$target" ]; then
-    echo "Backing up existing $target"
+    warn "backed up $(_short "$target")"
     mv "$target" "$BACKUP_DIR/"
   fi
-  echo "Symlinking $source -> $target"
+  act "link $(_short "$target") → $(_short "$source")"
   ln -s "$source" "$target"
 }
 
 function copy_essentials() {
+  section "Essentials (dotfile symlinks)"
   for file in essentials/*; do
     local source="$SCRIPT_DIR/$file"
     local target="$HOME/.$(basename "$file")"
@@ -56,30 +88,33 @@ function copy_essentials() {
 }
 
 function install_vim_plugins() {
+  section "Vim"
   if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
-    echo "Installing VIM plugins with vundle"
+    act "installing Vundle + plugins"
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     vim +PluginInstall +qall
   else
-    echo "Skipping VIM plugins"
+    ok "Vundle (installed)"
   fi
 }
 
 function default_shell() {
+  section "Default shell"
   if [ $SHELL != '/bin/zsh' ]; then
-    echo "Make zsh the default shell"
+    act "switching default shell to zsh"
     chsh -s $(which zsh)
   else
-    echo "zsh is already the default shell"
+    ok "zsh (default)"
   fi
 }
 
 function zshrc_stuff() {
+  section "zsh"
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "Install oh-my-zsh"
+    act "installing oh-my-zsh"
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
   else
-    echo "oh-my-zsh already installed"
+    ok "oh-my-zsh (installed)"
   fi
 
   touch ~/.zshrc
@@ -87,64 +122,72 @@ function zshrc_stuff() {
   local secret_line="if [ -f $HOME/.secret ]; then; source $HOME/.secret; fi"
 
   if ! grep -qF -- "$startup_line" ~/.zshrc; then
-    echo "Adding .startup source line to ~/.zshrc"
+    act "adding .startup source line to ~/.zshrc"
     echo "$startup_line" >> ~/.zshrc
+  else
+    ok "~/.zshrc sources ~/.startup"
   fi
   if ! grep -qF -- "$secret_line" ~/.zshrc; then
-    echo "Adding .secret source line to ~/.zshrc"
+    act "adding .secret source line to ~/.zshrc"
     echo "$secret_line" >> ~/.zshrc
+  else
+    ok "~/.zshrc sources ~/.secret"
   fi
 }
 
 # Copy sample gitconfig as a starting point. If one already exists and differs
 # from the sample, prompt before overwriting (and back up the original).
 function gitconfig_stuff() {
+  section "gitconfig"
   local source="$SCRIPT_DIR/gitconfig.sample"
   local target="$HOME/.gitconfig"
 
   if [ ! -e "$target" ] && [ ! -L "$target" ]; then
-    echo "Seeding ~/.gitconfig from sample"
+    act "seeding ~/.gitconfig from sample"
     cp "$source" "$target"
     return
   fi
 
   if cmp -s "$source" "$target"; then
-    echo "~/.gitconfig matches sample; leaving it alone"
+    ok "~/.gitconfig (matches sample)"
     return
   fi
 
-  echo "~/.gitconfig differs from $source:"
+  warn "~/.gitconfig differs from sample:"
   diff -u "$target" "$source" || true
-  read -r -p "Overwrite ~/.gitconfig with the sample? [y/N] " reply
+  read -r -p "    Overwrite ~/.gitconfig with the sample? [y/N] " reply
   case "$reply" in
     [yY]|[yY][eE][sS])
-      echo "Backing up existing ~/.gitconfig"
+      act "backing up existing ~/.gitconfig"
       mv "$target" "$BACKUP_DIR/"
       cp "$source" "$target"
       ;;
     *)
-      echo "Leaving ~/.gitconfig alone"
+      ok "~/.gitconfig (left alone)"
       ;;
   esac
 }
 
 function terminal_theme() {
+  section "Terminal theme"
   if [ -d ~/tmp/monokai.terminal ]; then
-    echo "monokai.terminal already cloned; skipping"
+    ok "monokai.terminal (cloned)"
     return
   fi
-  echo "Installing monokai.terminal theme"
+  act "installing monokai.terminal theme"
   mkdir -p ~/tmp && git clone git@github.com:stephenway/monokai.terminal.git ~/tmp/monokai.terminal
   open ~/tmp/monokai.terminal/Monokai.terminal
-  echo "Open Terminal settings and set Monokai.terminal as the default in Profiles"
+  info "Open Terminal settings and set Monokai.terminal as the default in Profiles"
 }
 
 function starship_stuff() {
+  section "Starship"
   mkdir -p "$HOME/.config"
   make_symlink "$SCRIPT_DIR/helpful/starship.toml" "$HOME/.config/starship.toml"
 }
 
 function claude_stuff() {
+  section "Claude / Agents"
   mkdir -p "$HOME/.claude"
   mkdir -p "$HOME/.agents"
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
@@ -154,6 +197,7 @@ function claude_stuff() {
 }
 
 function ghostty_stuff() {
+  section "Ghostty"
   local dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
   mkdir -p "$dir"
   make_symlink "$SCRIPT_DIR/helpful/ghostty-config" "$dir/config"
@@ -163,15 +207,16 @@ function ghostty_stuff() {
 # Only values that differ from Apple's ship defaults are written here.
 # Skipped on non-Darwin hosts.
 function macos_defaults() {
+  section "macOS defaults"
   if [ "$(uname)" != "Darwin" ]; then
-    echo "Not macOS; skipping defaults"
+    info "not macOS; skipping"
     return
   fi
 
-  read -r -p "Apply macOS system preferences? [y/N] " reply
+  read -r -p "    Apply macOS system preferences? [y/N] " reply
   case "$reply" in
     [yY]|[yY][eE][sS]) ;;
-    *) echo "Skipping macOS defaults"; return ;;
+    *) ok "skipped"; return ;;
   esac
 
   # Close System Settings so it doesn't overwrite values on quit
@@ -222,11 +267,11 @@ function macos_defaults() {
   # Force Touch
   defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true
 
-  echo "Restarting affected services (Dock, Finder, SystemUIServer)…"
+  act "restarting Dock, Finder, SystemUIServer"
   for app in Dock Finder SystemUIServer; do
     killall "$app" 2>/dev/null || true
   done
-  echo "Some changes require a logout/restart to fully apply."
+  info "some changes require a logout/restart to fully apply"
 }
 
 install_deps
@@ -242,8 +287,7 @@ gitconfig_stuff
 terminal_theme
 macos_defaults
 
-echo "Other items:"
-echo "- Install VSCode: https://code.visualstudio.com/download"
-echo "- Setup SSH Keys: https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
-echo "- Optional: pnpm (npm i -g pnpm), bun (curl -fsSL https://bun.sh/install | bash)"
-echo "- Set Ghostty as default terminal: open Ghostty, then Ghostty menu > Services > Make Ghostty the default terminal (macOS has no CLI for this)"
+section "Done — manual follow-ups"
+info "Setup SSH Keys:    https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
+info "Optional installs: pnpm (npm i -g pnpm), bun (curl -fsSL https://bun.sh/install | bash)"
+info "Default terminal:  open Ghostty → Ghostty menu → Services → Make Ghostty the default terminal"
