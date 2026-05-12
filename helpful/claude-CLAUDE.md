@@ -14,3 +14,9 @@ Never prepend `cd <path> &&` to a git command. If you need to target a different
 # Pull requests
 
 Keep PR bodies concise. Do not include file paths in the body — they make the description hard to skim and go stale as the branch evolves. Describe the change at the level of behavior and intent, not the file-by-file diff (reviewers can see the diff themselves).
+
+- **Lead with the change as a behavioral claim, not the audit trail.** Open with "Remove X — assigned in error, never used" rather than "X is written in three places but never read at runtime." Mechanics belong below the headline, if anywhere.
+- **Frame side-effect fixes as bug fixes.** If a refactor incidentally corrects a wrong default or unlocks intended behavior, name it directly ("Pro teams were getting standard, fix to elastic"). Don't hedge with phrasing like "behavior delta" or "matches the original (un-realised) intent."
+- **Collapse related code paths into one bullet** when they describe one concept. Upgrade and downgrade are one transition; the diff already enumerates the files.
+- **Surface the design context that makes the change legible** — typically a one-sentence contrast with related concepts ("deployments have X, projects have Y, teams don't need either"). This usually explains the choice better than detailed mechanics.
+- **Omit the Validation section** when there's nothing change-specific to verify (pure dead-code removal, refactors fully covered by existing tests). An empty or hygiene-only Validation is worse than none.
