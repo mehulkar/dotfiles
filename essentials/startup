@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 command -v starship &>/dev/null && eval "$(starship init zsh)"
-source $HOME/.env
+# Note: ~/.env is sourced from ~/.zshenv so non-interactive shells get it too.
 source $HOME/.pythonstuff
 source $HOME/.path
 source $HOME/.aliases

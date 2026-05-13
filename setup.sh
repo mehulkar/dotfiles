@@ -108,6 +108,23 @@ function default_shell() {
   fi
 }
 
+function zshenv_stuff() {
+  section "zshenv"
+  # ~/.zshenv is loaded for every zsh invocation, including non-interactive
+  # shells (scripts, Claude Code's Bash, etc.). Sourcing ~/.env here means
+  # fnm, PNPM_HOME, BUN_INSTALL, etc. are available everywhere without
+  # relying on ~/.zshrc being read.
+  touch ~/.zshenv
+  local env_line='[ -f "$HOME/.env" ] && source "$HOME/.env"'
+
+  if ! grep -qF -- "$env_line" ~/.zshenv; then
+    act "adding .env source line to ~/.zshenv"
+    echo "$env_line" >> ~/.zshenv
+  else
+    ok "~/.zshenv sources ~/.env"
+  fi
+}
+
 function zshrc_stuff() {
   section "zsh"
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -282,6 +299,7 @@ claude_stuff
 ghostty_stuff
 install_vim_plugins
 default_shell
+zshenv_stuff
 zshrc_stuff
 gitconfig_stuff
 terminal_theme
