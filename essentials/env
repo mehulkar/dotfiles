@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 #
 # Keep track of env variables. Woohoo!
-# Source this in whatever shell profile
+# Source this in whatever shell profile.
+#
+# Sourced from ~/.zshenv, so this runs before ~/.path adds /opt/homebrew/bin
+# to PATH. Anything that calls a brew-installed binary below (fnm, starship,
+# etc.) needs brew on PATH first — hence the brew shellenv at the top.
+if [ -z "$HOMEBREW_PREFIX" ]; then
+  if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
 
 ## I should probably figure out what this does
 export ARCHFLAGS="-arch x86_64"
