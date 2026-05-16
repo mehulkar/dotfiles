@@ -206,11 +206,20 @@ function starship_stuff() {
 function claude_stuff() {
   section "Claude / Agents"
   mkdir -p "$HOME/.claude"
+  mkdir -p "$HOME/.claude/commands"
   mkdir -p "$HOME/.agents"
+  mkdir -p "$HOME/.agents/skills"
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
   make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/AGENTS.md"
   make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.agents/AGENTS.md"
   make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.claude/CLAUDE.md"
+
+  # TODO: this isn't quite right, because commands and skills are different things
+  for file in "$SCRIPT_DIR"/agents/commands/*; do
+    [ -e "$file" ] || continue
+    make_symlink "$file" "$HOME/.agents/skills/$(basename "$file")"
+    make_symlink "$file" "$HOME/.claude/commands/$(basename "$file")"
+  done
 }
 
 function ghostty_stuff() {
