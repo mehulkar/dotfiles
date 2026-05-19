@@ -68,8 +68,11 @@ function make_symlink() {
   fi
 
   if [ -e "$target" ] || [ -L "$target" ]; then
+    local rel="${target#$HOME/}"
+    local backup_path="$BACKUP_DIR/$rel"
+    mkdir -p "$(dirname "$backup_path")"
     warn "backed up $(_short "$target")"
-    mv "$target" "$BACKUP_DIR/"
+    mv "$target" "$backup_path"
   fi
   act "link $(_short "$target") → $(_short "$source")"
   ln -s "$source" "$target"
@@ -209,10 +212,16 @@ function claude_stuff() {
   mkdir -p "$HOME/.claude/commands"
   mkdir -p "$HOME/.agents"
   mkdir -p "$HOME/.agents/skills"
+  mkdir -p "$HOME/.codex"
+  mkdir -p "$HOME/.config/opencode"
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
   make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/AGENTS.md"
   make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.agents/AGENTS.md"
   make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.claude/CLAUDE.md"
+
+  # ~/.agents/skills is the canonical skills directory; other tools point at it.
+  make_symlink "$HOME/.agents/skills" "$HOME/.codex/skills"
+  make_symlink "$HOME/.agents/skills" "$HOME/.config/opencode/skills"
 
   # TODO: this isn't quite right, because commands and skills are different things
   for file in "$SCRIPT_DIR"/agents/commands/*; do
