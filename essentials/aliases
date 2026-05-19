@@ -33,7 +33,7 @@ function webshare() {
 
 ## Shortcuts (guarded so missing tools don't break shell)
 command -v bat &>/dev/null && alias cat=bat
-command -v eza &>/dev/null && alias ls='eza -alHhF' || alias ls='ls -alHpGhF'
+command -v eza &>/dev/null && alias ls='eza -alHh --classify=auto' || alias ls='ls -alHpGhF'
 alias be='bundle exec'
 alias rc='rustc'
 alias vup='vim +PluginInstall +qall'
