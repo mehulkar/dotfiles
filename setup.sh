@@ -5,6 +5,23 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# --- Arg parsing ------------------------------------------------------------
+# --safe: skip steps that prompt to overwrite existing config (gitconfig,
+# macOS defaults). Symlink steps already back up what they replace, so the
+# rest of the script is safe to re-run.
+SAFE_MODE=0
+for arg in "$@"; do
+  case "$arg" in
+    --safe) SAFE_MODE=1 ;;
+    -h|--help)
+      echo "Usage: $0 [--safe]"
+      echo "  --safe   Skip gitconfig overwrite and macOS defaults prompts."
+      exit 0
+      ;;
+    *) echo "Unknown option: $arg" >&2; exit 1 ;;
+  esac
+done
+
 BACKUP_DIR="$HOME/dotfiles-bak/$(date +%Y%m%d-%H%M%S)"
 
 # Brew packages required by essentials (aliases, env, gitconfig, etc.)
@@ -81,8 +98,13 @@ function make_symlink() {
 function copy_essentials() {
   section "Essentials (dotfile symlinks)"
   for file in essentials/*; do
+    local name="$(basename "$file")"
+    # Skip files handled by dedicated setup steps (non-standard symlink target).
+    case "$name" in
+      nvim-init.lua) continue ;;
+    esac
     local source="$SCRIPT_DIR/$file"
-    local target="$HOME/.$(basename "$file")"
+    local target="$HOME/.$name"
     make_symlink "$source" "$target"
     if [[ "$file" == *.sh ]]; then
       chmod +x "$source"
@@ -206,6 +228,12 @@ function starship_stuff() {
   make_symlink "$SCRIPT_DIR/helpful/starship.toml" "$HOME/.config/starship.toml"
 }
 
+function nvim_stuff() {
+  section "Neovim"
+  mkdir -p "$HOME/.config/nvim"
+  make_symlink "$SCRIPT_DIR/essentials/nvim-init.lua" "$HOME/.config/nvim/init.lua"
+}
+
 function claude_stuff() {
   section "Claude / Agents"
   mkdir -p "$HOME/.claude"
@@ -215,9 +243,9 @@ function claude_stuff() {
   mkdir -p "$HOME/.codex"
   mkdir -p "$HOME/.config/opencode"
   make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
-  make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/AGENTS.md"
-  make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.agents/AGENTS.md"
-  make_symlink "$SCRIPT_DIR/helpful/AGENTS.md" "$HOME/.claude/CLAUDE.md"
+  make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/AGENTS.md"
+  make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/.agents/AGENTS.md"
+  make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 
   # ~/.agents/skills is the canonical skills directory; other tools point at it.
   make_symlink "$HOME/.agents/skills" "$HOME/.codex/skills"
@@ -316,12 +344,19 @@ starship_stuff
 claude_stuff
 ghostty_stuff
 install_vim_plugins
+nvim_stuff
 default_shell
 zshenv_stuff
 zshrc_stuff
-gitconfig_stuff
+if [ "$SAFE_MODE" -eq 1 ]; then
+  section "Skipped (--safe)"
+  ok "gitconfig"
+  ok "macOS defaults"
+else
+  gitconfig_stuff
+  macos_defaults
+fi
 terminal_theme
-macos_defaults
 
 section "Done — manual follow-ups"
 info "Setup SSH Keys:    https://help.github.com/articles/adding-a-new-ssh-key-to-the-ssh-agent"
