@@ -42,6 +42,8 @@ alias tmux='TERM=screen-256color-bce tmux'
 alias dc='docker-compose'
 alias dm='docker-machine'
 alias k=kubectl
+alias o='opencode'
+alias c='claude'
 
 # Git shortcuts
 alias gp='git push origin'
