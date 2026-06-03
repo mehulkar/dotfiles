@@ -44,6 +44,7 @@ alias dm='docker-machine'
 alias k=kubectl
 alias o='opencode'
 alias c='claude'
+alias x='codex'
 
 # Git shortcuts
 alias gp='git push origin'

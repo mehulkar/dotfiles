@@ -15,10 +15,9 @@
   dc      = diff --cached
   s       = status
   st      = status
-  br      = for-each-ref --sort=-committerdate --format="%(committerdate:relative)%09%(objectname:short)%09%(refname:short)" refs/heads
+  br      = "!f() { fmt='%(align:20,left)%(committerdate:relative)%(end) %(objectname:short) %(align:55,left)%(refname:short)%(end) %(worktreepath)'; git for-each-ref --sort=-committerdate --format=\"%(if)%(worktreepath)%(then)$fmt%(end)\" refs/heads | grep -v '^$'; echo; git for-each-ref --sort=-committerdate --format=\"%(if)%(worktreepath)%(then)%(else)$fmt%(end)\" refs/heads | grep -v '^$'; }; f #"
   b       = branch
   bra     = branch -a
-  brm     = branch --merged
   l       = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
   ll      = log --date=format-local:'%Y-%m-%d %H:%M:%S %z' --pretty=format:'%Cgreen(%cd)%Creset %Cred%h%Creset -%C(yellow)%d%Creset %s %C(bold blue)<%an>%Creset'
   last    = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'--abbrev-commit --date=relative -1
