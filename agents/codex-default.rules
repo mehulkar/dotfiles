@@ -1,0 +1,26 @@
+# git and gh
+prefix_rule(pattern=["gh", "pr"], decision="allow")
+prefix_rule(pattern=["gh", "run"], decision="allow")
+prefix_rule(pattern=["git", "push"], decision="allow")
+prefix_rule(pattern=["git", "-C"], decision="allow")
+prefix_rule(pattern=["git", "add"], decision="allow")
+prefix_rule(pattern=["git", "checkout"], decision="allow")
+prefix_rule(pattern=["git", "commit"], decision="allow")
+prefix_rule(pattern=["git", "revert"], decision="allow")
+prefix_rule(pattern=["git", "fetch"], decision="allow")
+
+# specialty tools
+prefix_rule(pattern=["pnpm", "install"], decision="allow")
+prefix_rule(pattern=["vc", "project"], decision="allow")
+prefix_rule(pattern=["fnm", "use"], decision="allow")
+prefix_rule(pattern=["datadog-query"], decision="allow")
+prefix_rule(pattern=["pnpm"], decision="allow")
+
+# general bash things
+prefix_rule(pattern=["mkdir"], decision="allow")
+prefix_rule(pattern=["sort"], decision="allow")
+prefix_rule(pattern=["cp"], decision="allow")
+prefix_rule(pattern=["perl", "-0pi"], decision="allow")
+prefix_rule(pattern=["rg"], decision="allow")
+prefix_rule(pattern=["sed"], decision="allow")
+prefix_rule(pattern=["ls"], decision="allow")

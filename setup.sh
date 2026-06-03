@@ -241,11 +241,14 @@ function claude_stuff() {
   mkdir -p "$HOME/.agents"
   mkdir -p "$HOME/.agents/skills"
   mkdir -p "$HOME/.codex"
+  mkdir -p "$HOME/.codex/rules"
   mkdir -p "$HOME/.config/opencode"
-  make_symlink "$SCRIPT_DIR/helpful/claude-settings.json" "$HOME/.claude/settings.json"
+  make_symlink "$SCRIPT_DIR/agents/claude-settings.json" "$HOME/.claude/settings.json"
   make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/AGENTS.md"
   make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/.agents/AGENTS.md"
   make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/.claude/CLAUDE.md"
+  make_symlink "$SCRIPT_DIR/agents/AGENTS.md" "$HOME/.codex/AGENTS.md"
+  make_symlink "$SCRIPT_DIR/agents/codex-default.rules" "$HOME/.codex/rules/default.rules"
 
   # ~/.agents/skills is the canonical skills directory; other tools point at it.
   make_symlink "$HOME/.agents/skills" "$HOME/.codex/skills"
