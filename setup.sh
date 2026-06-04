@@ -237,7 +237,6 @@ function nvim_stuff() {
 function claude_stuff() {
   section "Claude / Agents"
   mkdir -p "$HOME/.claude"
-  mkdir -p "$HOME/.claude/commands"
   mkdir -p "$HOME/.agents"
   mkdir -p "$HOME/.agents/skills"
   mkdir -p "$HOME/.codex"
@@ -254,11 +253,10 @@ function claude_stuff() {
   make_symlink "$HOME/.agents/skills" "$HOME/.codex/skills"
   make_symlink "$HOME/.agents/skills" "$HOME/.config/opencode/skills"
 
-  # TODO: this isn't quite right, because commands and skills are different things
-  for file in "$SCRIPT_DIR"/agents/commands/*; do
+  for file in "$SCRIPT_DIR"/agents/skills/*; do
     [ -e "$file" ] || continue
+    [ "$(basename "$file")" = ".keep" ] && continue
     make_symlink "$file" "$HOME/.agents/skills/$(basename "$file")"
-    make_symlink "$file" "$HOME/.claude/commands/$(basename "$file")"
   done
 }
 
