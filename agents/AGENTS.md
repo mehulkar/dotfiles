@@ -1,3 +1,12 @@
+# How to talk to me
+
+When you talk to me, be as brief as possible.
+
+# Voice
+
+When writing on my behalf (pull requests, git commits, slack messages, etc),
+follow ./VOICE.md (sits relative to this real file, not relative to the symlink)
+
 # Worktrees
 
 Before making any file edits for a code-changing task, use a worktree (`EnterWorktree`)
@@ -10,9 +19,11 @@ unless specififed otherwise by my prompt.
 
 # Git commands
 
-Never prepend `cd <path> &&` to a git command. If you need to target a different directory, use `git
+- Never prepend `cd <path> &&` to a git command. If you need to target a different directory, use `git
 -C <path> <subcommand>` instead. The `cd X && git ...` pattern triggers a permission prompt every
 time, and after `EnterWorktree` the CWD is already the worktree so the `cd` is redundant anyway.
+
+- Never force push, unless explicitly asked to.
 
 # Pull requests
 

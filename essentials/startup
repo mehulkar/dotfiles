@@ -9,3 +9,15 @@ source $HOME/.aliases
 if [ -f "$HOME/.secret" ]; then
   source "$HOME/.secret"
 fi
+
+# Make starship's prompt git-scan skip untracked files (prompt speed) without
+# changing git anywhere else. GIT_CONFIG_* is exported only inside this function,
+# so the starship binary + the git it spawns see status.showUntrackedFiles=no,
+# while interactive `git status`, VS Code, scripts, etc. stay 100% normal.
+# Must run after `starship init` above so PROMPT/RPROMPT exist to repoint.
+_starship() {
+  local -x GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=status.showUntrackedFiles GIT_CONFIG_VALUE_0=no
+  command starship "$@"
+}
+PROMPT=${PROMPT//$(command -v starship)/_starship}
+RPROMPT=${RPROMPT//$(command -v starship)/_starship}

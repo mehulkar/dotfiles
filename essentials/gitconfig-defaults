@@ -13,7 +13,6 @@
   d       = diff
   co      = checkout
   dc      = diff --cached
-  s       = status
   st      = status
   br      = "!f() { fmt='%(align:20,left)%(committerdate:relative)%(end) %(objectname:short) %(align:55,left)%(refname:short)%(end) %(worktreepath)'; git for-each-ref --sort=-committerdate --format=\"%(if)%(worktreepath)%(then)$fmt%(end)\" refs/heads | grep -v '^$'; echo; git for-each-ref --sort=-committerdate --format=\"%(if)%(worktreepath)%(then)%(else)$fmt%(end)\" refs/heads | grep -v '^$'; }; f #"
   b       = branch

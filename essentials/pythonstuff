@@ -1,6 +1,6 @@
-alias pd='python setup.py sdist'
-alias pup='python setup.py sdist upload'
-alias pst='python setup.py test'
+alias pyd='python setup.py sdist'
+alias pyup='python setup.py sdist upload'
+alias pyst='python setup.py test'
 
 function pip-cd {
   USAGE="Usage: pip-show <pacakgename>"

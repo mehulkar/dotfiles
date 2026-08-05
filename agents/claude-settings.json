@@ -1,65 +1,50 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "apiKeyHelper": "security find-generic-password -a \"$USER\" -s \"VERCEL_AI_GATEWAY_KEY\" -w",
+  "effortLevel": "high",
+  "enabledPlugins": {
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "vercel-plugin@vercel-vercel-plugin": false,
+    "vercel@claude-plugins-official": true
+  },
   "env": {
     "ANTHROPIC_BASE_URL": "https://ai-gateway.vercel.sh"
   },
-  "permissions": {
-    "allow": [
-      "Bash(bash:*)",
-      "Bash(echo:*)",
-      "Bash(find:*)",
-      "Bash(ls:*)",
-      "Bash(mkdir:*)",
-      "Bash(grep:*)",
-      "Bash(node:*)",
-      "Bash(python3:*)",
-      "Bash(tar:*)",
-      "Bash(xargs:*)",
-      "Bash(datadog-query:*)",
-      "Bash(datadog-query aggregate-logs:*)",
-      "Bash(datadog-query query-metrics:*)",
-      "Bash(datadog-query search-logs:*)",
-      "Bash(datadog-query search-traces:*)",
-      "Bash(gh api:*)",
-      "Bash(gh pr:*)",
-      "Bash(gh run:*)",
-      "Bash(git add:*)",
-      "Bash(git log:*)",
-      "Bash(git commit:*)",
-      "Bash(git config:*)",
-      "Bash(git push:*)",
-      "Bash(git -C:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm check:*)",
-      "Bash(pnpm install:*)",
-      "Bash(turbo:*)"
-    ]
-  },
-  "model": "opus[1m]",
-  "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true,
-    "vercel-plugin@vercel-vercel-plugin": true,
-    "figma@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
-  },
   "extraKnownMarketplaces": {
-    "vercel-vercel-plugin": {
-      "source": {
-        "source": "directory",
-        "path": "/Users/mehulkar/.cache/plugins/github.com-vercel-vercel-plugin"
-      }
-    },
     "chrome-devtools-plugins": {
       "source": {
-        "source": "github",
-        "repo": "ChromeDevTools/chrome-devtools-mcp"
+        "repo": "ChromeDevTools/chrome-devtools-mcp",
+        "source": "github"
+      }
+    },
+    "vercel-vercel-plugin": {
+      "source": {
+        "path": "/Users/mehulkar/.cache/plugins/github.com-vercel-vercel-plugin",
+        "source": "directory"
       }
     }
   },
-  "effortLevel": "high",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "bash '/Users/mehulkar/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ]
+  },
+  "model": "opus[1m]",
+  "permissions": {
+    "allow": ["Bash(bash:*)","Bash(echo:*)","Bash(find:*)","Bash(ls:*)","Bash(mkdir:*)","Bash(grep:*)","Bash(node:*)","Bash(python3:*)","Bash(tar:*)","Bash(xargs:*)","Bash(datadog-query:*)","Bash(datadog-query aggregate-logs:*)","Bash(datadog-query query-metrics:*)","Bash(datadog-query search-logs:*)","Bash(datadog-query search-traces:*)","Bash(gh api:*)","Bash(gh pr:*)","Bash(gh run:*)","Bash(git add:*)","Bash(git log:*)","Bash(git commit:*)","Bash(git config:*)","Bash(git push:*)","Bash(git -C:*)","Bash(pnpm add:*)","Bash(pnpm check:*)","Bash(pnpm install:*)","Bash(turbo:*)","mcp__incident_io__*","Skill(incident)","mcp__vercel-devbox","Bash(ssh devbox_*:*)"]
+  },
   "skipDangerousModePermissionPrompt": true,
   "verbose": false
 }
