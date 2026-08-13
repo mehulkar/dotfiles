@@ -4,8 +4,16 @@ When you talk to me, be as brief as possible.
 
 # Voice
 
-When writing on my behalf (pull requests, git commits, slack messages, etc),
-follow ./VOICE.md (sits relative to this real file, not relative to the symlink)
+When writing on my behalf (pull requests, git commits, slack messages, etc), follow `VOICE.md`,
+which is next to the real (canonical) `AGENTS.md` file.
+
+Resolve the `AGENTS.md` symlink first, then read `VOICE.md` from the resolved file's directory. Do
+not look in `$HOME` or the current working directory. For example:
+
+```sh
+agents_file="$(realpath /Users/mehulkar/AGENTS.md)"
+voice_file="$(dirname "$agents_file")/VOICE.md"
+```
 
 # Worktrees
 
