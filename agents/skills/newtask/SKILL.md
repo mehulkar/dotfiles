@@ -9,8 +9,8 @@ Launch an interactive `pi` agent in its own Herdr pane and immediately return
 control to the parent. The invocation may include `--workspace <workspace-id>`
 and `--tab <tab-id>` before the task prompt. When both are supplied, create the
 child pane in that exact tab. Never monitor the child. Give the child the
-parent's identity so it can communicate back with `/backtoparent` if needed,
-but do not instruct it to report back.
+parent's identity and instruct it to report back with `/backtoparent` when done,
+without requesting cleanup unless the task prompt explicitly asks for it.
 
 Give the new herdr pane an appropriate name for what it's doing.
 
@@ -64,15 +64,18 @@ herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID"
 #   herdr agent get "$CHILD_PANE_ID"
 #   herdr agent rename "$CHILD_PANE_ID" <name>
 
-# 4. Send a self-contained task and make the parent identity available.
-# Do not require or request a callback.
+# 4. Send a self-contained task, parent identity, and callback suffix.
+# Put the suffix after the task so it is present by default but still defers to
+# an explicit cleanup instruction in the user's task.
 CHILD_PROMPT="$(printf '%s\n' \
-  'Parent Herdr identity (available if you need /backtoparent):' \
+  'Parent Herdr identity:' \
   "- pane id: $PARENT_PANE_ID" \
   "- workspace id: $PARENT_WORKSPACE_ID" \
   "- agent id: $PARENT_AGENT_ID" \
   '' \
-  '<TASK PROMPT>')"
+  '<TASK PROMPT>' \
+  '' \
+  'Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.')"
 herdr agent prompt "$CHILD_PANE_ID" "$CHILD_PROMPT"
 
 # 5. Return immediately.
@@ -92,8 +95,9 @@ parent session.
 - Give the child a complete, self-contained task prompt and definition of done.
 - After submitting the task, do not poll, wait, read output, schedule checks, or run background monitoring.
 - Only inspect or interact with the child later if the user explicitly asks.
-- Do not instruct the child to report back. The identity is context the child may use through `/backtoparent` when communication is useful or explicitly requested.
-- Pi remains open after finishing. Pane management belongs to the user unless explicitly requested.
+- Append the exact default callback suffix after the task: `Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.`
+- Require `/backtoparent` when done, but request cleanup only when the user's task explicitly asks for it.
+- Pi remains open after finishing unless the user's task explicitly requests cleanup.
 - Target agents by pane ID, not by the ambiguous `pi` label.
 
 ## Gotchas
