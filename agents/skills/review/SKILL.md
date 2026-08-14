@@ -1,17 +1,15 @@
 ---
 name: review
-description: Run a PR code review in a dedicated Pi subagent pane in the "pr reviews" Herdr workspace, report the result to the parent with /backtoparent, then have the parent close the review pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
+description: Run a PR code review through /newtask in the "pr reviews" Herdr workspace. The child reports with /backtoparent and asks the parent to shut down its review agent and pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
 ---
 
 # review: PR review in a Herdr pane
 
-Run a read-only code review in its own pane in the **pr reviews** Herdr
-workspace. The child reports its result with `/backtoparent`. After receiving
-the report, the parent relays it to the user and closes the child review pane.
+Launch every review with `/newtask`. The review child reports its findings with
+`/backtoparent`. The parent then relays the findings and shuts down the child
+agent by closing its Herdr pane.
 
 ## 1. Capture the parent identity
-
-Before creating anything, capture all parent identifiers:
 
 ```sh
 PARENT_PANE_ID="${HERDR_PANE_ID:?review must run inside Herdr}"
@@ -26,48 +24,32 @@ PARENT_AGENT_ID="${PI_SESSION_ID:?parent Pi agent ID is unavailable}"
 herdr workspace list
 ```
 
-Find the workspace whose `label` is `pr reviews` and note its `workspace_id`.
-If missing, create it and capture `result.workspace.workspace_id`:
+Find the workspace labeled `pr reviews`. If missing, create it and capture
+`result.workspace.workspace_id`:
 
 ```sh
 herdr workspace create --label "pr reviews"
 ```
 
-## 3. Resolve the review target
+## 3. Resolve the PR
 
-The skill arguments identify the PR as a URL, `owner/repo#N`, or `#N`/`N`.
-Resolve the repository from context when omitted, then fetch its metadata:
+The arguments identify the PR as a URL, `owner/repo#N`, or `#N`/`N`. Resolve
+an omitted repository from context, then fetch metadata:
 
 ```sh
 gh pr view <N> --repo <owner/repo> --json repository,number,title,headRefName
 ```
 
-For Vercel repositories, use `~/dev/vercel/vercel-core/<repo>` as the child CWD.
-Otherwise use the known local repository root or `~/dev/vercel/vercel-core`.
+## 4. Launch with /newtask
 
-## 4. Launch the child and give it callback instructions
+Invoke `/newtask` in the `pr reviews` workspace. Do not use `herdr agent start`
+directly and do not monitor or poll the child.
 
-Create the review agent without focusing it:
-
-```sh
-herdr agent start review-<N> --workspace <pr-reviews-workspace-id> \
-  --cwd <repo-dir> --split right --no-focus -- pi "<REVIEW PROMPT>"
+```text
+/newtask --workspace <pr-reviews-workspace-id> <REVIEW PROMPT>
 ```
 
-Capture `result.agent.pane_id` as `CHILD_PANE_ID`. Then inspect the child pane
-to capture its workspace and tab IDs. Do not assume positional IDs:
-
-```sh
-herdr pane get "$CHILD_PANE_ID"
-```
-
-Capture these values from the response:
-
-- `CHILD_WORKSPACE_ID`
-- `CHILD_TAB_ID`
-
-The initial `<REVIEW PROMPT>` must be self-contained and include this content,
-adapted to the PR and with every placeholder replaced:
+Use this self-contained review prompt with every placeholder replaced:
 
 > Review PR `<owner/repo>#<N>`, "<title>". Run `gh pr diff <N> --repo
 > <owner/repo>` and `gh pr view <N> --repo <owner/repo> --json ...` to inspect
@@ -77,11 +59,11 @@ adapted to the PR and with every placeholder replaced:
 > `major`, or `nit`, and a merge recommendation of approve, request changes, or
 > comment.
 >
-> When finished, you MUST invoke `/backtoparent` with the full review. Your
-> callback must also say: `Review complete. Close my review pane.` Include your
-> review pane ID `<CHILD_PANE_ID>`, workspace ID `<CHILD_WORKSPACE_ID>`, tab ID
-> `<CHILD_TAB_ID>`, and agent ID if available so the parent can safely identify
-> and close this pane.
+> When the review is finished, invoke `/backtoparent` with the full review and
+> explicitly say the task is complete and ready for cleanup. Instruct the parent
+> to shut down this review agent and close its Herdr pane. `/backtoparent` will
+> prefix your current pane, tab, workspace, and agent IDs so the parent can
+> identify the correct child safely.
 >
 > Parent Herdr identity for `/backtoparent`:
 > - pane ID: `<PARENT_PANE_ID>`
@@ -89,44 +71,40 @@ adapted to the PR and with every placeholder replaced:
 > - tab ID: `<PARENT_TAB_ID>`
 > - agent ID: `<PARENT_AGENT_ID>`
 
-If the start command cannot include identifiers that are only known after the
-pane is created, start Pi first, capture the child identity, and submit the full
-prompt with `herdr agent prompt "$CHILD_PANE_ID" "$REVIEW_PROMPT"`.
+Return immediately after `/newtask` launches the child. The callback is the
+completion mechanism.
 
-Return immediately after prompting the child. Do not poll or gather its terminal
-output. The `/backtoparent` callback is the completion mechanism.
+## 5. Handle /backtoparent and clean up
 
-## 5. Handle the callback and clean up
-
-When the child callback arrives:
+When the callback arrives:
 
 1. Relay the review findings to the user.
-2. Read the supplied child pane, workspace, and tab IDs.
-3. Verify that the pane still belongs to the supplied child workspace and tab:
+2. Read the child pane, tab, workspace, and agent IDs from the identity block at
+   the beginning of the message.
+3. Verify the pane still belongs to the supplied workspace and tab:
 
    ```sh
    herdr pane get "<child-pane-id>"
    ```
 
-4. Close that review pane:
+4. Shut down the review agent and pane:
 
    ```sh
    herdr pane close "<child-pane-id>"
    ```
 
-5. If identifiers changed because another pane or tab closed, list panes only in
-   the supplied child workspace and match the stable agent/session identity.
-   Never guess from a positional pane ID.
+Closing the pane terminates the interactive review agent. Do not close the
+parent pane.
 
-Do not close the parent pane. The phrase `Close my review pane` always means the
-child review pane identified in the callback.
+If IDs changed because another pane or tab closed, list panes only in the
+supplied child workspace and match the stable agent/session identity. Never
+guess from a positional pane ID.
 
-## Gotchas
+## Rules
 
-- Pane and tab IDs can renumber when another pane or tab closes. Verify the
-  workspace and tab before cleanup.
-- Target the review by pane ID. Agent names such as `review-*` can collide.
-- Pi remains interactive after finishing. A successful callback does not exit
-  it, so the parent must close the child pane.
-- If `/backtoparent` cannot reach the exact parent pane in the exact parent
-  workspace, the child must report the failure locally and leave the pane open.
+- Always launch reviews through `/newtask`.
+- Always require the child to report through `/backtoparent`.
+- A completed review must ask the parent to shut down its agent and pane.
+- Do not poll, wait for, or read the child pane after launching it.
+- Target cleanup by the identity supplied by `/backtoparent`, not by an
+  ambiguous `review-*` name.
