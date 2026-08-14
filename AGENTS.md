@@ -4,6 +4,9 @@ This repo is Mehul Kar's personal dotfiles. Alongside the usual shell/vim/git
 configuration, it also vendors personal AI agent instructions and settings
 (primarily for Claude Code).
 
+IMPORTANT: When making changes to this repo, do not make PRs, do not use worktrees.
+Just commit directly on main.
+
 ## Layout
 
 - `setup.sh` — installer. Symlinks `essentials/*` into `$HOME` as dotfiles,
@@ -15,6 +18,7 @@ configuration, it also vendors personal AI agent instructions and settings
     `~/.claude/CLAUDE.md` (global agent instructions that apply to every
     project, across multiple agent tools).
   - `claude-settings.json` → symlinked to `~/.claude/settings.json`.
+  - `pi-settings.json` → symlinked to `~/.pi/agent/settings.json`.
   - `starship.toml`, `git-completion.bash`, `git-prompt`, `ps1`.
 - `gitconfig.sample` — starter `~/.gitconfig`. `setup.sh` seeds it on first
   run and prompts before overwriting.

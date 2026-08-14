@@ -2,6 +2,8 @@
 
 When you talk to me, be as brief as possible.
 
+- Always link PRs when mentioning them (full URL or markdown link), every time.
+
 # Voice
 
 When writing on my behalf (pull requests, git commits, slack messages, etc), follow `VOICE.md`,

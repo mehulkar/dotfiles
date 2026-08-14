@@ -5,6 +5,7 @@
   fsmonitor = true
   editor = /usr/bin/vim
   untrackedCache = true
+  excludesFile = ~/.gitignore
 [index]
   threads = true
 [alias]
