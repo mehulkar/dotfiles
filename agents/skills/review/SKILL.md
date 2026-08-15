@@ -9,14 +9,32 @@ Launch every review with `/newtask`. The review child reports its findings with
 `/backtoparent`. The parent then relays the findings and shuts down the child
 agent by closing its Herdr pane.
 
-## 1. Capture the parent identity
+## 1. Capture and refresh the parent identity
+
+`HERDR_WORKSPACE_ID` and `HERDR_TAB_ID` can be stale if this pane was moved.
+Treat the current pane as authoritative: inspect it, compare its workspace and
+tab IDs with the environment, and replace the variables when they differ.
 
 ```sh
 PARENT_PANE_ID="${HERDR_PANE_ID:?review must run inside Herdr}"
-PARENT_WORKSPACE_ID="${HERDR_WORKSPACE_ID:?review must run inside Herdr}"
-PARENT_TAB_ID="${HERDR_TAB_ID:?review must run inside Herdr}"
 PARENT_AGENT_ID="${PI_SESSION_ID:?parent Pi agent ID is unavailable}"
+PARENT_PANE_JSON="$(herdr pane get "$PARENT_PANE_ID")"
+CURRENT_WORKSPACE_ID="$(jq -r '.result.pane.workspace_id' <<<"$PARENT_PANE_JSON")"
+CURRENT_TAB_ID="$(jq -r '.result.pane.tab_id' <<<"$PARENT_PANE_JSON")"
+
+if [[ "${HERDR_WORKSPACE_ID:-}" != "$CURRENT_WORKSPACE_ID" ]]; then
+  export HERDR_WORKSPACE_ID="$CURRENT_WORKSPACE_ID"
+fi
+if [[ "${HERDR_TAB_ID:-}" != "$CURRENT_TAB_ID" ]]; then
+  export HERDR_TAB_ID="$CURRENT_TAB_ID"
+fi
+
+PARENT_WORKSPACE_ID="$CURRENT_WORKSPACE_ID"
+PARENT_TAB_ID="$CURRENT_TAB_ID"
 ```
+
+Use only these refreshed `PARENT_WORKSPACE_ID` and `PARENT_TAB_ID` values for
+tab creation, `/newtask`, and the child callback prompt.
 
 ## 2. Resolve the PR
 
@@ -100,6 +118,7 @@ guess from a positional pane ID.
 
 ## Rules
 
+- Before creating a tab, call `herdr pane get "$HERDR_PANE_ID"` and refresh stale `HERDR_WORKSPACE_ID` and `HERDR_TAB_ID` values from the result.
 - Always create a new tab in the parent's current Herdr workspace.
 - Never create or switch to a separate review workspace.
 - Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
