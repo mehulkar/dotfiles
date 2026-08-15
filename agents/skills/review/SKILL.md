@@ -1,6 +1,6 @@
 ---
 name: review
-description: Run a PR code review through /newtask in the "pr reviews" Herdr workspace. The child reports with /backtoparent and asks the parent to shut down its review agent and pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
+description: Run a PR code review through /newtask in a new tab in the current Herdr workspace. The child reports with /backtoparent and asks the parent to shut down its review agent and pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
 ---
 
 # review: PR review in a Herdr pane
@@ -18,20 +18,7 @@ PARENT_TAB_ID="${HERDR_TAB_ID:?review must run inside Herdr}"
 PARENT_AGENT_ID="${PI_SESSION_ID:?parent Pi agent ID is unavailable}"
 ```
 
-## 2. Ensure the pr reviews workspace exists
-
-```sh
-herdr workspace list
-```
-
-Find the workspace labeled `pr reviews`. If missing, create it and capture
-`result.workspace.workspace_id`:
-
-```sh
-herdr workspace create --label "pr reviews"
-```
-
-## 3. Resolve the PR
+## 2. Resolve the PR
 
 The arguments identify the PR as a URL, `owner/repo#N`, or `#N`/`N`. Resolve
 an omitted repository from context, then fetch metadata:
@@ -40,13 +27,24 @@ an omitted repository from context, then fetch metadata:
 gh pr view <N> --repo <owner/repo> --json repository,number,title,headRefName
 ```
 
-## 4. Launch with /newtask
+## 3. Create a review tab and launch with /newtask
 
-Invoke `/newtask` in the `pr reviews` workspace. Do not use `herdr agent start`
-directly and do not monitor or poll the child.
+Create a new tab in the parent's current workspace without focusing it:
+
+```sh
+herdr tab create \
+  --workspace "$PARENT_WORKSPACE_ID" \
+  --label "review <owner/repo>#<N>" \
+  --cwd ~/dev/vercel/vercel-core \
+  --no-focus
+```
+
+Capture `result.tab.tab_id` as `REVIEW_TAB_ID`. Invoke `/newtask` with both the
+parent workspace and new tab so it uses that tab's initial pane. Do not create a
+new workspace, use `herdr agent start` directly, or monitor the child.
 
 ```text
-/newtask --workspace <pr-reviews-workspace-id> <REVIEW PROMPT>
+/newtask --workspace <PARENT_WORKSPACE_ID> --tab <REVIEW_TAB_ID> <REVIEW PROMPT>
 ```
 
 Use this self-contained review prompt with every placeholder replaced:
@@ -74,7 +72,7 @@ Use this self-contained review prompt with every placeholder replaced:
 Return immediately after `/newtask` launches the child. The callback is the
 completion mechanism.
 
-## 5. Handle /backtoparent and clean up
+## 4. Handle /backtoparent and clean up
 
 When the callback arrives:
 
@@ -102,7 +100,9 @@ guess from a positional pane ID.
 
 ## Rules
 
-- Always launch reviews through `/newtask`.
+- Always create a new tab in the parent's current Herdr workspace.
+- Never create or switch to a separate review workspace.
+- Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
 - Always require the child to report through `/backtoparent`.
 - A completed review must ask the parent to shut down its agent and pane.
 - Do not poll, wait for, or read the child pane after launching it.
