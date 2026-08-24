@@ -1,6 +1,6 @@
 ---
 name: backtoparent
-description: Send a message or final report from a child Pi task back to its parent Herdr pane using the parent pane and workspace IDs supplied at launch. Always identifies the child pane, tab, workspace, and agent, and requests pane cleanup when the task is done.
+description: Send a message or final report from a child Pi task back to its parent Herdr pane using the parent pane and workspace IDs supplied at launch. Always identifies the child pane, tab, workspace, and agent.
 ---
 
 # backtoparent: communicate with the parent task
@@ -38,16 +38,38 @@ Source Herdr identity:
 <message or final report>
 ```
 
-If the input says or clearly implies that the child task is complete and ready
-for cleanup, append this instruction to the message sent to the parent:
+Before sending, wait until the parent pane's input area is clear. If the user
+is typing in the parent pane, sending a prompt would garble both inputs. Poll
+the visible terminal content and check the input region (between the two
+horizontal rule lines above the status bar):
 
-```text
-Cleanup requested: verify the source pane, workspace, and tab identity above, then close this child pane with `herdr pane close <CHILD_PANE_ID>`.
+```sh
+wait_for_clear_input() {
+  local pane_id="$1"
+  local max_wait=120
+  local waited=0
+  while [ "$waited" -lt "$max_wait" ]; do
+    local draft
+    draft="$(herdr agent read "$pane_id" --source visible --format text 2>/dev/null \
+      | python3 -c "
+import sys
+lines = list(sys.stdin)
+rules = [i for i,l in enumerate(lines) if l.strip() and set(l.strip()) == {'\u2500'}]
+if len(rules) >= 2:
+    between = lines[rules[-2]+1:rules[-1]]
+    text = ''.join(between).strip()
+    print(text)
+" 2>/dev/null)"
+    if [ -z "$draft" ]; then
+      return 0
+    fi
+    sleep 3
+    waited=$((waited + 3))
+  done
+  # Timeout: send anyway rather than losing the message entirely.
+  return 0
+}
 ```
-
-Treat phrases such as `done`, `finished`, `complete`, `ready for cleanup`,
-`close my pane`, `kill my pane`, and `shut me down` as cleanup requests. Do not
-append the cleanup instruction for progress updates, questions, or blockers.
 
 Send the completed message:
 
@@ -61,6 +83,7 @@ MESSAGE='<identity-prefixed message or final report>'
 ACTUAL_WORKSPACE_ID="$(herdr pane get "$PARENT_PANE_ID" | jq -r '.result.pane.workspace_id')"
 test "$ACTUAL_WORKSPACE_ID" = "$PARENT_WORKSPACE_ID"
 
+wait_for_clear_input "$PARENT_PANE_ID"
 herdr agent prompt "$PARENT_PANE_ID" "$MESSAGE"
 ```
 
@@ -75,8 +98,8 @@ another target. Report locally that the parent could not be reached.
 - Verify the parent workspace before sending.
 - Send one concise, self-contained message.
 - Use `herdr agent prompt`; do not write raw terminal input.
-- When the task is ready for cleanup, tell the parent to verify and close the
-  child pane.
-- Do not close the parent pane.
-- Do not close the child pane yourself. The parent performs cleanup after it
-  receives the result.
+- Never request or suggest pane cleanup, even when reporting that the task is
+  complete. Pane lifecycle is controlled separately from this skill.
+- Do not close the parent pane or child pane.
+- Always wait for the parent pane's input to be clear before sending. Do not
+  skip this step even if the message is urgent.
