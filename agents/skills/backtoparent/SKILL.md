@@ -14,6 +14,22 @@ Use the parent Herdr identity included in the child's initial prompt:
 The text passed to `/backtoparent` is the message to send. If no text was passed,
 send a concise summary of the child's result, current status, or blocker.
 
+PR ownership callbacks are control-plane messages for orchestrators. Send one immediately whenever
+this child starts managing a PR, whether it opened the PR or was assigned an existing one:
+
+```text
+PR ownership started: https://github.com/OWNER/REPO/pull/123
+```
+
+If it stops owning an unmerged PR, send:
+
+```text
+PR ownership ended: https://github.com/OWNER/REPO/pull/123
+```
+
+Use full canonical PR URLs. These callbacks remain required even when ordinary progress/blocker
+reporting is disabled.
+
 ## Recipe
 
 Capture the child's current identity:
@@ -97,6 +113,8 @@ another target. Report locally that the parent could not be reached.
 - Use the exact parent pane and workspace IDs from the initial prompt.
 - Verify the parent workspace before sending.
 - Send one concise, self-contained message.
+- Send PR ownership started/ended callbacks immediately with full canonical URLs. They are
+  control-plane metadata, not progress updates.
 - Use `herdr agent prompt`; do not write raw terminal input.
 - Never request or suggest pane cleanup, even when reporting that the task is
   complete. Pane lifecycle is controlled separately from this skill.

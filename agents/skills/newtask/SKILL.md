@@ -14,6 +14,10 @@ without requesting cleanup unless the task prompt explicitly asks for it.
 
 Give the new herdr pane an appropriate name for what it's doing.
 
+When the parent is an orchestrator managing PR work, retain the returned child pane ID and follow the
+project's `monitor-workspace-prs` ownership protocol. Register the child immediately after launch and
+include the required PR ownership callback instructions in its first prompt.
+
 ## Invocation
 
 ```text
@@ -75,6 +79,8 @@ CHILD_PROMPT="$(printf '%s\n' \
   '' \
   '<TASK PROMPT>' \
   '' \
+  'PR ownership callback: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, immediately use /backtoparent with: PR ownership started: <full PR URL>. Do this once per PR before monitoring or waiting on CI. If you stop owning it without merging, report: PR ownership ended: <full PR URL>.' \
+  '' \
   'Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.')"
 herdr agent prompt "$CHILD_PANE_ID" "$CHILD_PROMPT"
 
@@ -93,6 +99,10 @@ parent session.
 - Start children from `~/dev/vercel/vercel-core`. The child chooses its repository and worktree.
 - If starting Pi manually via `pane run`, run `fnm use 22 && node -v` first.
 - Give the child a complete, self-contained task prompt and definition of done.
+- For orchestrated PR work, keep the returned child pane ID, register it with the project's
+  `monitor-workspace-prs` registry, and include the PR ownership callback instructions in the first
+  prompt. Ownership callbacks are required control-plane messages even when progress reporting is
+  disabled.
 - After submitting the task, do not poll, wait, read output, schedule checks, or run background monitoring.
 - Only inspect or interact with the child later if the user explicitly asks.
 - Append the exact default callback suffix after the task: `Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.`
