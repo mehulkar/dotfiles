@@ -58,8 +58,10 @@ else
   # Parse pane_id from the JSON response as CHILD_PANE_ID.
 fi
 
-# 3. Start Pi in the pane. `agent start` runs the agent, waits for detection,
-# and names it in one call. The pane must be at its shell prompt.
+# 3. Name the pane, then start and name Pi. Pane and agent names are separate:
+# `pane rename` labels the Herdr pane, while `agent start <name>` labels the agent.
+# The pane must be at its shell prompt.
+herdr pane rename "$CHILD_PANE_ID" <name>
 herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID"
 
 # If Pi fails to start because Herdr's persistent environment retains an older
@@ -97,6 +99,7 @@ parent session.
 - Reject `--tab` without `--workspace`, and verify that the specified tab belongs to the specified workspace before creating the child.
 - When a target tab is specified, never split the parent pane. Use the target tab's sole unclaimed shell pane when available; otherwise split a pane in the target tab.
 - Start children from `~/dev/vercel/vercel-core`. The child chooses its repository and worktree.
+- Give both the pane and agent the same descriptive name using `herdr pane rename` and `herdr agent start <name>`.
 - If starting Pi manually via `pane run`, run `fnm use 22 && node -v` first.
 - Give the child a complete, self-contained task prompt and definition of done.
 - For orchestrated PR work, keep the returned child pane ID, register it with the project's
@@ -120,6 +123,7 @@ parent session.
 - `herdr tab get <tab-id>`
 - `herdr tab create --workspace <workspace-id> --cwd <path> --no-focus`
 - `herdr pane split <pane-id> --direction right|down --cwd <path> --no-focus`
+- `herdr pane rename <pane-id> <name>`
 - `herdr agent start <name> --kind pi --pane <pane-id>`
 - `herdr pane run <pane-id> <command>`
 - `herdr agent get <pane-id>`
