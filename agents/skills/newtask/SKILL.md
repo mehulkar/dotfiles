@@ -15,8 +15,20 @@ without requesting cleanup unless the task prompt explicitly asks for it.
 Give the new herdr pane an appropriate name for what it's doing.
 
 When the parent is an orchestrator managing PR work, retain the returned child pane ID and follow the
-project's `monitor-workspace-prs` ownership protocol. Register the child immediately after launch and
-include the required PR ownership callback instructions in its first prompt.
+project's `global-pr-monitor` ownership protocol. Register the child immediately after launch into
+the global registry and include the required PR ownership callback instructions in its first prompt:
+
+```sh
+python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/global-pr-monitor/scripts/registry.py \
+  child --pane "$CHILD_PANE_ID" --tab "$CHILD_TAB_ID" --workspace "$CHILD_WORKSPACE_ID" --agent "$CHILD_AGENT_ID" --name '<name>'
+```
+
+If the global registry does not exist yet, initialize it first:
+
+```sh
+python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/global-pr-monitor/scripts/registry.py \
+  init --parent-pane "$PARENT_PANE_ID" --parent-agent "$PARENT_AGENT_ID"
+```
 
 ## Invocation
 
@@ -58,11 +70,21 @@ else
   # Parse pane_id from the JSON response as CHILD_PANE_ID.
 fi
 
+# 2b. Capture the child's workspace and tab IDs for registry.
+CHILD_TAB_ID="$(herdr pane get "$CHILD_PANE_ID" | jq -r '.result.pane.tab_id')"
+CHILD_WORKSPACE_ID="$(herdr pane get "$CHILD_PANE_ID" | jq -r '.result.pane.workspace_id')"
+
 # 3. Name the pane, then start and name Pi. Pane and agent names are separate:
 # `pane rename` labels the Herdr pane, while `agent start <name>` labels the agent.
 # The pane must be at its shell prompt.
 herdr pane rename "$CHILD_PANE_ID" <name>
 herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID"
+
+# 3b. Register the child in the global PR registry. Use terminal_id as the stable
+# agent identifier — pane IDs can renumber but terminal IDs do not.
+CHILD_AGENT_ID="$(herdr pane get "$CHILD_PANE_ID" | jq -r '.result.pane.terminal_id')"
+python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/global-pr-monitor/scripts/registry.py \
+  child --pane "$CHILD_PANE_ID" --tab "$CHILD_TAB_ID" --workspace "$CHILD_WORKSPACE_ID" --agent "$CHILD_AGENT_ID" --name '<name>'
 
 # If Pi fails to start because Herdr's persistent environment retains an older
 # Node version, fall back to launching manually, then wait for detection:
@@ -81,7 +103,7 @@ CHILD_PROMPT="$(printf '%s\n' \
   '' \
   '<TASK PROMPT>' \
   '' \
-  'PR ownership callback: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, immediately use /backtoparent with: PR ownership started: <full PR URL>. Do this once per PR before monitoring or waiting on CI. If you stop owning it without merging, report: PR ownership ended: <full PR URL>.' \
+  'PR ownership callback: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, immediately use /backtoparent with: PR ownership started: <full PR URL> | branch: <branch> | worktree: <worktree-path>. Do this once per PR before monitoring or waiting on CI. If you stop owning it without merging, report: PR ownership ended: <full PR URL>.' \
   '' \
   'Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.')"
 herdr agent prompt "$CHILD_PANE_ID" "$CHILD_PROMPT"
@@ -102,8 +124,8 @@ parent session.
 - Give both the pane and agent the same descriptive name using `herdr pane rename` and `herdr agent start <name>`.
 - If starting Pi manually via `pane run`, run `fnm use 22 && node -v` first.
 - Give the child a complete, self-contained task prompt and definition of done.
-- For orchestrated PR work, keep the returned child pane ID, register it with the project's
-  `monitor-workspace-prs` registry, and include the PR ownership callback instructions in the first
+- For orchestrated PR work, keep the returned child pane ID, register it with the global
+  `global-pr-monitor` registry, and include the PR ownership callback instructions in the first
   prompt. Ownership callbacks are required control-plane messages even when progress reporting is
   disabled.
 - After submitting the task, do not poll, wait, read output, schedule checks, or run background monitoring.

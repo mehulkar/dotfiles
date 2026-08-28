@@ -1,6 +1,6 @@
 ---
 name: review
-description: Run a PR code review through /newtask in a new tab in the current Herdr workspace. The child reports with /backtoparent and asks the parent to shut down its review agent and pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
+description: Run a PR code review through /newtask in the shared "reviews" tab of the current Herdr workspace, creating the tab on first use. The child reports with /backtoparent and asks the parent to shut down its review agent and pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
 ---
 
 # review: PR review in a Herdr pane
@@ -45,24 +45,37 @@ an omitted repository from context, then fetch metadata:
 gh pr view <N> --repo <owner/repo> --json repository,number,title,headRefName
 ```
 
-## 3. Create a review tab and launch with /newtask
+## 3. Reuse or create the reviews tab, then launch with /newtask
 
-Create a new tab in the parent's current workspace without focusing it:
+All reviews live in a single tab labeled `reviews` in the parent's current
+workspace. Look it up first; create it only if missing.
 
 ```sh
-herdr tab create \
-  --workspace "$PARENT_WORKSPACE_ID" \
-  --label "review <owner/repo>#<N>" \
-  --cwd ~/dev/vercel/vercel-core \
-  --no-focus
+REVIEWS_TAB_ID="$(
+  herdr tab list --workspace "$PARENT_WORKSPACE_ID" \
+    | jq -r '.result.tabs[] | select(.label == \"reviews\") | .tab_id' \
+    | head -n 1
+)"
+if [[ -z "$REVIEWS_TAB_ID" ]]; then
+  REVIEWS_TAB_ID="$(
+    herdr tab create \
+      --workspace "$PARENT_WORKSPACE_ID" \
+      --label "reviews" \
+      --cwd ~/dev/vercel/vercel-core \
+      --no-focus \
+    | jq -r '.result.tab.tab_id'
+  )"
+fi
 ```
 
-Capture `result.tab.tab_id` as `REVIEW_TAB_ID`. Invoke `/newtask` with both the
-parent workspace and new tab so it uses that tab's initial pane. Do not create a
-new workspace, use `herdr agent start` directly, or monitor the child.
+Invoke `/newtask` with the parent workspace and `REVIEWS_TAB_ID`. If the tab
+was just created, `/newtask` uses its initial pane; otherwise it splits a pane
+inside the tab. Name the child agent `review-<owner>-<repo>-<N>` so multiple
+reviews in the shared tab are easy to tell apart. Do not create a new
+workspace, use `herdr agent start` directly, or monitor the child.
 
 ```text
-/newtask --workspace <PARENT_WORKSPACE_ID> --tab <REVIEW_TAB_ID> <REVIEW PROMPT>
+/newtask --workspace <PARENT_WORKSPACE_ID> --tab <REVIEWS_TAB_ID> <REVIEW PROMPT>
 ```
 
 Use this self-contained review prompt with every placeholder replaced:
@@ -109,8 +122,9 @@ When the callback arrives:
    herdr pane close "<child-pane-id>"
    ```
 
-Closing the pane terminates the interactive review agent. Do not close the
-parent pane.
+Closing the pane terminates the interactive review agent. The shared `reviews`
+tab stays open for future reviews; it is only removed if the user closes it
+manually. Do not close the parent pane.
 
 If IDs changed because another pane or tab closed, list panes only in the
 supplied child workspace and match the stable agent/session identity. Never
@@ -119,7 +133,7 @@ guess from a positional pane ID.
 ## Rules
 
 - Before creating a tab, call `herdr pane get "$HERDR_PANE_ID"` and refresh stale `HERDR_WORKSPACE_ID` and `HERDR_TAB_ID` values from the result.
-- Always create a new tab in the parent's current Herdr workspace.
+- Reuse the existing `reviews` tab when present; only create it once.
 - Never create or switch to a separate review workspace.
 - Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
 - Always require the child to report through `/backtoparent`.

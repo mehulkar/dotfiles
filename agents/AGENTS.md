@@ -4,6 +4,11 @@ When you talk to me, be as brief as possible.
 
 - Always link PRs when mentioning them (full URL or markdown link), every time.
 
+## Rules
+
+- Never merge a PR
+- Never reply to a human user's comment. You may reply to comments from mehulkar on GH if they are on PRs authored by mehulkar.
+
 # Voice
 
 When writing on my behalf (pull requests, git commits, slack messages, etc), follow `VOICE.md`,
