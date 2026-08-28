@@ -54,38 +54,9 @@ Source Herdr identity:
 <message or final report>
 ```
 
-Before sending, wait until the parent pane's input area is clear. If the user
-is typing in the parent pane, sending a prompt would garble both inputs. Poll
-the visible terminal content and check the input region (between the two
-horizontal rule lines above the status bar):
-
-```sh
-wait_for_clear_input() {
-  local pane_id="$1"
-  local max_wait=120
-  local waited=0
-  while [ "$waited" -lt "$max_wait" ]; do
-    local draft
-    draft="$(herdr agent read "$pane_id" --source visible --format text 2>/dev/null \
-      | python3 -c "
-import sys
-lines = list(sys.stdin)
-rules = [i for i,l in enumerate(lines) if l.strip() and set(l.strip()) == {'\u2500'}]
-if len(rules) >= 2:
-    between = lines[rules[-2]+1:rules[-1]]
-    text = ''.join(between).strip()
-    print(text)
-" 2>/dev/null)"
-    if [ -z "$draft" ]; then
-      return 0
-    fi
-    sleep 3
-    waited=$((waited + 3))
-  done
-  # Timeout: send anyway rather than losing the message entirely.
-  return 0
-}
-```
+Before sending, use the shared `safe-herdr-message` helper. It verifies the
+parent workspace and waits for the Pi input area to be clear, so a callback
+cannot garble a draft the parent is typing.
 
 Send the completed message:
 
@@ -94,13 +65,13 @@ PARENT_PANE_ID='<parent pane id from the initial prompt>'
 PARENT_WORKSPACE_ID='<parent workspace id from the initial prompt>'
 MESSAGE='<identity-prefixed message or final report>'
 
-# Confirm the pane still exists in the expected workspace. Do not send to a pane
-# with the same positional ID in another workspace.
-ACTUAL_WORKSPACE_ID="$(herdr pane get "$PARENT_PANE_ID" | jq -r '.result.pane.workspace_id')"
-test "$ACTUAL_WORKSPACE_ID" = "$PARENT_WORKSPACE_ID"
+python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/safe-herdr-message/scripts/send.py \
+  --pane "$PARENT_PANE_ID" \
+  --workspace "$PARENT_WORKSPACE_ID" \
+  --message "$MESSAGE"
 
-wait_for_clear_input "$PARENT_PANE_ID"
-herdr agent prompt "$PARENT_PANE_ID" "$MESSAGE"
+# A nonzero exit means the parent pane disappeared, changed workspace, or
+# remained active for two minutes. Do not bypass the helper with raw input.
 ```
 
 If the parent pane does not exist or its workspace does not match, do not guess
@@ -111,7 +82,7 @@ another target. Report locally that the parent could not be reached.
 - Put the child's current pane, tab, workspace, and agent IDs at the beginning of
   every message.
 - Use the exact parent pane and workspace IDs from the initial prompt.
-- Verify the parent workspace before sending.
+- Use the shared safe-herdr-message helper; it verifies the parent workspace and waits for clear input.
 - Send one concise, self-contained message.
 - Send PR ownership started/ended callbacks immediately with full canonical URLs. They are
   control-plane metadata, not progress updates.
