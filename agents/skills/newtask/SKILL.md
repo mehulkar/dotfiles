@@ -12,7 +12,8 @@ child pane in that exact tab. Never monitor the child. Give the child the
 parent's identity and instruct it to report back with `/backtoparent` when done,
 without requesting cleanup unless the task prompt explicitly asks for it.
 
-Give the new herdr pane an appropriate name for what it's doing.
+Always give the new Herdr pane a concise, descriptive name for its task. This requirement applies to
+the pane label itself, not merely the Herdr agent name.
 
 For PR work, instruct the child to register each PR directly with the global PR monitor. The monitor
 will send updates straight to the child pane and retain the PR until GitHub reports it merged or closed.
@@ -62,11 +63,11 @@ fi
 CHILD_TAB_ID="$(herdr pane get "$CHILD_PANE_ID" | jq -r '.result.pane.tab_id')"
 CHILD_WORKSPACE_ID="$(herdr pane get "$CHILD_PANE_ID" | jq -r '.result.pane.workspace_id')"
 
-# 3. Name the pane, then start and name Pi. Pane and agent names are separate:
-# `pane rename` labels the Herdr pane, while `agent start <name>` labels the agent.
-# The pane must be at its shell prompt.
-herdr pane rename "$CHILD_PANE_ID" <name>
+# 3. Start Pi, then explicitly name the Herdr pane. `agent start <name>` names
+# the agent and does not satisfy the pane-label requirement.
+# The pane must be at its shell prompt before starting Pi.
 herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID"
+herdr pane rename "$CHILD_PANE_ID" <descriptive-pane-name>
 
 # If Pi fails to start because Herdr's persistent environment retains an older
 # Node version, fall back to launching manually, then wait for detection:
@@ -103,7 +104,7 @@ parent session.
 - Reject `--tab` without `--workspace`, and verify that the specified tab belongs to the specified workspace before creating the child.
 - When a target tab is specified, never split the parent pane. Use the target tab's sole unclaimed shell pane when available; otherwise split a pane in the target tab.
 - Start children from `~/dev/vercel/vercel-core`. The child chooses its repository and worktree.
-- Give both the pane and agent the same descriptive name using `herdr pane rename` and `herdr agent start <name>`.
+- Always set a concise, descriptive pane label with `herdr pane rename` after starting Pi. Naming the agent does not count as naming the pane.
 - If starting Pi manually via `pane run`, run `fnm use 22 && node -v` first.
 - Give the child a complete, self-contained task prompt and definition of done.
 - For PR work, include direct global PR monitor registration instructions in the first prompt.
