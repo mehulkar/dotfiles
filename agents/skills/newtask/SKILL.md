@@ -9,8 +9,8 @@ Launch an interactive `pi` agent in its own Herdr pane and immediately return
 control to the parent. The invocation may include `--workspace <workspace-id>`
 and `--tab <tab-id>` before the task prompt. When both are supplied, create the
 child pane in that exact tab. Never monitor the child. Give the child the
-parent's identity and instruct it to report back with `/backtoparent` when done,
-without requesting cleanup unless the task prompt explicitly asks for it.
+parent's identity and instruct it to use `/child-is-done` when completely done.
+Use `/backtoparent` only for progress, blockers, and results that do not end the child.
 
 Always give the new Herdr pane a concise, descriptive name for its task. This requirement applies to
 the pane label itself, not merely the Herdr agent name.
@@ -75,9 +75,7 @@ herdr pane rename "$CHILD_PANE_ID" <descriptive-pane-name>
 #   herdr agent get "$CHILD_PANE_ID"
 #   herdr agent rename "$CHILD_PANE_ID" <name>
 
-# 4. Send a self-contained task, parent identity, and callback suffix.
-# Put the suffix after the task so it is present by default but still defers to
-# an explicit cleanup instruction in the user's task.
+# 4. Send a self-contained task, parent identity, and completion suffix.
 CHILD_PROMPT="$(printf '%s\n' \
   'Parent Herdr identity:' \
   "- pane id: $PARENT_PANE_ID" \
@@ -88,7 +86,7 @@ CHILD_PROMPT="$(printf '%s\n' \
   '' \
   'PR monitoring: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, register it directly by running: python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/global-pr-monitor/scripts/registry.py manage --url <full-pr-url> --pane "$HERDR_PANE_ID" --tab "$HERDR_TAB_ID" --workspace "$HERDR_WORKSPACE_ID" --agent "$PI_SESSION_ID" --branch <branch> --worktree <worktree-path>. Do this once per PR before waiting on CI. Do not release it; monitoring continues until GitHub reports it merged or closed. Monitor updates will arrive directly in this pane.' \
   '' \
-  'Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.')"
+  'When the task is completely done, use /child-is-done. It verifies this is a child, runs /shutdown, reports the outcome and learnings directly to the parent with safe-herdr-message, deregisters this pane from the PR monitor, and asks the parent to close this pane. Use /backtoparent only for progress or blockers that do not end this child.')"
 herdr agent prompt "$CHILD_PANE_ID" "$CHILD_PROMPT"
 
 # 5. Return immediately.
@@ -111,9 +109,9 @@ parent session.
   The child registers its own PR, receives updates directly, and leaves it registered until merged or closed.
 - After submitting the task, do not poll, wait, read output, schedule checks, or run background monitoring.
 - Only inspect or interact with the child later if the user explicitly asks.
-- Append the exact default callback suffix after the task: `Use the /backtoparent skill to report back to the parent when done, but do not request cleanup unless the user prompt explicitly says so above.`
-- Require `/backtoparent` when done, but request cleanup only when the user's task explicitly asks for it.
-- Pi remains open after finishing unless the user's task explicitly requests cleanup.
+- Append the exact default completion suffix after the task: `When the task is completely done, use /child-is-done. It verifies this is a child, runs /shutdown, reports the outcome and learnings directly to the parent with safe-herdr-message, deregisters this pane from the PR monitor, and asks the parent to close this pane. Use /backtoparent only for progress or blockers that do not end this child.`
+- Require `/child-is-done` for completed tasks. Use `/backtoparent` only for non-terminal progress or blockers.
+- The child does not close itself. `/child-is-done` asks the parent to close its pane.
 - Target agents by pane ID, not by the ambiguous `pi` label.
 
 ## Gotchas
