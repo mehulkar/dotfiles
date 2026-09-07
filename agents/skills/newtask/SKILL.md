@@ -14,7 +14,7 @@ parent's identity for optional communication.
 Always give the new Herdr pane a concise, descriptive name for its task. This requirement applies to
 the pane label itself, not merely the Herdr agent name.
 
-For PR work, instruct the child to register each PR directly with the global PR monitor. The monitor
+For PR work, instruct the child to register each PR directly with the engineering manager. The manager
 will send updates straight to the child pane and retain the PR until GitHub reports it merged or closed.
 The parent does not register the PR or relay monitor updates.
 
@@ -83,7 +83,7 @@ CHILD_PROMPT="$(printf '%s\n' \
   '' \
   '<TASK PROMPT>' \
   '' \
-  'PR monitoring: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, register it directly by running: python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/global-pr-monitor/scripts/registry.py manage --url <full-pr-url> --pane "$HERDR_PANE_ID" --tab "$HERDR_TAB_ID" --workspace "$HERDR_WORKSPACE_ID" --agent "$PI_SESSION_ID" --branch <branch> --worktree <worktree-path>. Do this once per PR before waiting on CI. Do not release it; monitoring continues until GitHub reports it merged or closed. Monitor updates will arrive directly in this pane.')"
+  'PR monitoring: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, register it directly with the engineering manager by running: python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/em/scripts/registry.py manage --url <full-pr-url> --pane "$HERDR_PANE_ID" --tab "$HERDR_TAB_ID" --workspace "$HERDR_WORKSPACE_ID" --agent "$PI_SESSION_ID" --branch <branch> --worktree <worktree-path>. Do this once per PR before waiting on CI. Do not release it; monitoring continues until GitHub reports it merged or closed. Engineering manager updates will arrive directly in this pane.')"
 herdr agent prompt "$CHILD_PANE_ID" "$CHILD_PROMPT"
 
 # 5. Return immediately.
@@ -102,7 +102,7 @@ parent session.
 - Always set a concise, descriptive pane label with `herdr pane rename` after starting Pi. Naming the agent does not count as naming the pane.
 - If starting Pi manually via `pane run`, run `fnm use 22 && node -v` first.
 - Give the child a complete, self-contained task prompt and definition of done.
-- For PR work, include direct global PR monitor registration instructions in the first prompt.
+- For PR work, include direct engineering manager registration instructions in the first prompt.
   The child registers its own PR, receives updates directly, and leaves it registered until merged or closed.
 - After submitting the task, do not poll, wait, read output, schedule checks, or run background monitoring.
 - Only inspect or interact with the child later if the user explicitly asks.
