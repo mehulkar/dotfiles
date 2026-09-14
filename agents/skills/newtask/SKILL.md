@@ -83,7 +83,7 @@ CHILD_PROMPT="$(printf '%s\n' \
   '' \
   '<TASK PROMPT>' \
   '' \
-  'PR monitoring: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, register it directly with the engineering manager by running: python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/em/scripts/registry.py manage --url <full-pr-url> --pane "$HERDR_PANE_ID" --tab "$HERDR_TAB_ID" --workspace "$HERDR_WORKSPACE_ID" --agent "$PI_SESSION_ID" --branch <branch> --worktree <worktree-path>. Do this once per PR before waiting on CI. Do not release it; monitoring continues until GitHub reports it merged or closed. Engineering manager updates will arrive directly in this pane.')"
+  'PR monitoring: whenever you begin managing a GitHub PR, whether you opened it or were told to take it over, register it directly with the engineering manager by running: python3 /Users/mehulkar/dev/vercel/vercel-core/.agents/skills/em/scripts/registry.py manage --url <full-pr-url> --pane "$HERDR_PANE_ID" --tab "$HERDR_TAB_ID" --workspace "$HERDR_WORKSPACE_ID" --agent "$PI_SESSION_ID" --branch <branch> --worktree <worktree-path>. Do this once per PR before waiting on CI. Do not release it; monitoring continues until GitHub reports it merged or closed. Engineering manager updates will arrive directly in this pane. When the engineering manager reports that your PR merged, immediately invoke /child-is-done and follow that skill completely.')"
 herdr agent prompt "$CHILD_PANE_ID" "$CHILD_PROMPT"
 
 # 5. Return immediately.
@@ -104,9 +104,12 @@ parent session.
 - Give the child a complete, self-contained task prompt and definition of done.
 - For PR work, include direct engineering manager registration instructions in the first prompt.
   The child registers its own PR, receives updates directly, and leaves it registered until merged or closed.
+- When the engineering manager reports the child's PR merged, the child must immediately invoke
+  `/child-is-done` and follow its shutdown, deregistration, reporting, and cleanup-request workflow.
 - After submitting the task, do not poll, wait, read output, schedule checks, or run background monitoring.
 - Only inspect or interact with the child later if the user explicitly asks.
-- Do not instruct the child to invoke a completion or parent-reporting skill. The user triggers those manually.
+- Do not instruct the child to invoke a parent-reporting skill. PR merge is the exception for completion:
+  it must invoke `/child-is-done` automatically.
 - Target agents by pane ID, not by the ambiguous `pi` label.
 
 ## Gotchas
