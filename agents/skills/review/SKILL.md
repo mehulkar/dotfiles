@@ -1,6 +1,6 @@
 ---
 name: review
-description: Run a PR code review through /newtask in the shared "reviews" tab of the current Herdr workspace, creating the tab on first use. The child reports with /backtoparent and asks the parent to shut down its review agent and pane. Use when the user asks to review a PR, such as /skill:review <PR URL, owner/repo#N, or #N>.
+description: Run a PR code review through /newtask in the shared "reviews" tab of the current Herdr workspace. The child reports findings plus token and dollar cost with /backtoparent; the parent includes cost in its summary and cleans up the pane.
 ---
 
 # review: PR review in a Herdr pane
@@ -88,11 +88,18 @@ Use this self-contained review prompt with every placeholder replaced:
 > `major`, or `nit`, and a merge recommendation of approve, request changes, or
 > comment.
 >
-> When the review is finished, invoke `/backtoparent` with the full review and
-> explicitly say the task is complete and ready for cleanup. Instruct the parent
-> to shut down this review agent and close its Herdr pane. `/backtoparent` will
-> prefix your current pane, tab, workspace, and agent IDs so the parent can
-> identify the correct child safely.
+> When the review is finished, first run:
+>
+> ```sh
+> python3 /Users/mehulkar/.agents/skills/review/scripts/session-cost.py
+> ```
+>
+> Invoke `/backtoparent` with the full review and the helper's complete `Review cost:` line. Put the
+> cost line after the merge recommendation. Explicitly say the task is complete and ready for cleanup,
+> and instruct the parent to shut down this review agent and close its Herdr pane. `/backtoparent` will
+> prefix your current pane, tab, workspace, and agent IDs so the parent can identify the correct child
+> safely. Never estimate tokens or dollars from the footer; the helper's session JSONL totals are
+> authoritative.
 >
 > Parent Herdr identity for `/backtoparent`:
 > - pane ID: `<PARENT_PANE_ID>`
@@ -107,9 +114,21 @@ completion mechanism.
 
 When the callback arrives:
 
-1. Relay the review findings to the user.
-2. Read the child pane, tab, workspace, and agent IDs from the identity block at
-   the beginning of the message.
+1. Read the child pane, tab, workspace, and agent IDs from the identity block at the beginning of the
+   message. Resolve the child's session path and recompute its final cost after the callback:
+
+   ```sh
+   CHILD_SESSION_FILE="$(herdr agent get "<child-pane-id>" | jq -r '.result.agent.agent_session.value')"
+   python3 /Users/mehulkar/.agents/skills/review/scripts/session-cost.py "$CHILD_SESSION_FILE"
+   ```
+
+2. Relay the review findings to the user with the recomputed `Review cost:` line. This post-callback
+   value supersedes the cost line embedded by the child.
+   - For one review, show that review's token total, token-category breakdown, and dollar cost.
+   - When summarizing multiple reviewer callbacks, show each review's cost and a final aggregate row
+     summing all four token categories, total tokens, and dollars. Do not omit cached tokens.
+   - If session resolution fails, use the callback's cost line. If both are unavailable, report
+     `cost unavailable` rather than estimating it.
 3. Verify the pane still belongs to the supplied workspace and tab:
 
    ```sh
@@ -137,6 +156,9 @@ guess from a positional pane ID.
 - Never create or switch to a separate review workspace.
 - Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
 - Always require the child to report through `/backtoparent`.
+- Every completed review callback must include the output of `scripts/session-cost.py`.
+- Every user-facing review summary must show token and dollar cost; multi-review summaries must also
+  show aggregate cost.
 - A completed review must ask the parent to shut down its agent and pane.
 - Do not poll, wait for, or read the child pane after launching it.
 - Target cleanup by the identity supplied by `/backtoparent`, not by an
