@@ -5,7 +5,14 @@ description: Run a PR code review through /newtask in the shared "reviews" tab o
 
 # review: PR review in a Herdr pane
 
-Launch every review with `/newtask`. The review child reports its findings with
+Invocation:
+
+```text
+/review [--model <provider/model>] <PR URL, owner/repo#N, or #N>
+```
+
+If `--model` is supplied, remove it from the PR arguments and pass it to `/newtask`; never silently
+substitute the default model. Launch every review with `/newtask`. The review child reports its findings with
 `/backtoparent`. The parent then relays the findings and shuts down the child
 agent by closing its Herdr pane.
 
@@ -70,12 +77,12 @@ fi
 
 Invoke `/newtask` with the parent workspace and `REVIEWS_TAB_ID`. If the tab
 was just created, `/newtask` uses its initial pane; otherwise it splits a pane
-inside the tab. Name the child agent `review-<owner>-<repo>-<N>` so multiple
-reviews in the shared tab are easy to tell apart. Do not create a new
+inside the tab. Name the child agent `review-<owner>-<repo>-<N>-<model-slug>` when a model is specified so multiple
+reviews of one PR are easy to tell apart. Otherwise use `review-<owner>-<repo>-<N>`. Do not create a new
 workspace, use `herdr agent start` directly, or monitor the child.
 
 ```text
-/newtask --workspace <PARENT_WORKSPACE_ID> --tab <REVIEWS_TAB_ID> <REVIEW PROMPT>
+/newtask [--model <REVIEW_MODEL>] --workspace <PARENT_WORKSPACE_ID> --tab <REVIEWS_TAB_ID> <REVIEW PROMPT>
 ```
 
 Use this self-contained review prompt with every placeholder replaced:
@@ -155,6 +162,8 @@ guess from a positional pane ID.
 - Reuse the existing `reviews` tab when present; only create it once.
 - Never create or switch to a separate review workspace.
 - Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
+- When invoked with `--model`, pass the exact provider/model to `/newtask` and include the model in the
+  review child name and callback summary.
 - Always require the child to report through `/backtoparent`.
 - Every completed review callback must include the output of `scripts/session-cost.py`.
 - Every user-facing review summary must show token and dollar cost; multi-review summaries must also

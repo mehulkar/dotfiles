@@ -6,9 +6,9 @@ description: Launch a Pi subagent in its own Herdr pane and return immediately w
 # newtask — independent Pi subagent
 
 Launch an interactive `pi` agent in its own Herdr pane and immediately return
-control to the parent. The invocation may include `--workspace <workspace-id>`
-and `--tab <tab-id>` before the task prompt. When both are supplied, create the
-child pane in that exact tab. Never monitor the child. Give the child the
+control to the parent. The invocation may include `--model <provider/model>`,
+`--workspace <workspace-id>`, and `--tab <tab-id>` before the task prompt. When both placement
+arguments are supplied, create the child pane in that exact tab. Never monitor the child. Give the child the
 parent's identity for optional communication.
 
 Always give the new Herdr pane a concise, descriptive name for its task. This requirement applies to
@@ -21,10 +21,11 @@ The parent does not register the PR or relay monitor updates.
 ## Invocation
 
 ```text
-/newtask [--workspace <workspace-id>] [--tab <tab-id>] <task prompt>
+/newtask [--model <provider/model>] [--workspace <workspace-id>] [--tab <tab-id>] <task prompt>
 ```
 
-`--tab` requires `--workspace`. If neither is supplied, create the child beside
+`--model` selects the Pi model for the child and is not part of the task prompt. `--tab` requires
+`--workspace`. If neither placement argument is supplied, create the child beside
 the parent in the current tab. If only `--workspace` is supplied, create a new
 tab in that workspace and use its initial pane.
 
@@ -65,7 +66,11 @@ CHILD_WORKSPACE_ID="$(herdr pane get "$CHILD_PANE_ID" | jq -r '.result.pane.work
 # 3. Start Pi, then explicitly name the Herdr pane. `agent start <name>` names
 # the agent and does not satisfy the pane-label requirement.
 # The pane must be at its shell prompt before starting Pi.
-herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID"
+if TARGET_MODEL was supplied; then
+  herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID" -- --model "$TARGET_MODEL"
+else
+  herdr agent start <name> --kind pi --pane "$CHILD_PANE_ID"
+fi
 herdr pane rename "$CHILD_PANE_ID" <descriptive-pane-name>
 
 # If Pi fails to start because Herdr's persistent environment retains an older
@@ -95,7 +100,8 @@ parent session.
 ## Rules
 
 - Include `HERDR_PANE_ID`, `HERDR_WORKSPACE_ID`, and `PI_SESSION_ID` in every child's first prompt as the parent pane ID, workspace ID, and agent ID.
-- Treat `--workspace` and `--tab` as placement arguments, not as part of the child task prompt.
+- Treat `--model`, `--workspace`, and `--tab` as launch arguments, not as part of the child task prompt.
+- Pass `--model` through to Pi exactly; do not silently fall back to the default model.
 - Reject `--tab` without `--workspace`, and verify that the specified tab belongs to the specified workspace before creating the child.
 - When a target tab is specified, never split the parent pane. Use the target tab's sole unclaimed shell pane when available; otherwise split a pane in the target tab.
 - Start children from `~/dev/vercel/vercel-core`. The child chooses its repository and worktree.
