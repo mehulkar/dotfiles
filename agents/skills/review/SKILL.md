@@ -8,13 +8,14 @@ description: Run a PR code review through /newtask in the shared "reviews" tab o
 Invocation:
 
 ```text
-/review [--model <provider/model>] <PR URL, owner/repo#N, or #N>
+/review [--model <provider/model> | --models <model-a,model-b,...>] <PR URL, owner/repo#N, or #N>
 ```
 
 If `--model` is supplied, remove it from the PR arguments and pass it to `/newtask`; never silently
-substitute the default model. Launch every review with `/newtask`. The review child reports its findings with
-`/backtoparent`. The parent then relays the findings and shuts down the child
-agent by closing its Herdr pane.
+substitute the default model. If `--models` is supplied, split its comma-separated exact model IDs and
+launch one review child per model. This is one `/review` orchestration even though it fans out to several
+children. Never invoke `/review` again for that PR just to add another model. Every review child reports
+its findings with `/backtoparent`. The invoking agent aggregates callbacks and closes each child pane.
 
 ## 1. Capture and refresh the parent identity
 
@@ -75,11 +76,11 @@ if [[ -z "$REVIEWS_TAB_ID" ]]; then
 fi
 ```
 
-Invoke `/newtask` with the parent workspace and `REVIEWS_TAB_ID`. If the tab
-was just created, `/newtask` uses its initial pane; otherwise it splits a pane
-inside the tab. Name the child agent `review-<owner>-<repo>-<N>-<model-slug>` when a model is specified so multiple
-reviews of one PR are easy to tell apart. Otherwise use `review-<owner>-<repo>-<N>`. Do not create a new
-workspace, use `herdr agent start` directly, or monitor the child.
+Invoke `/newtask` once for each selected model with the parent workspace and `REVIEWS_TAB_ID`. If the
+tab was just created, the first `/newtask` uses its initial pane; later launches split within the tab.
+Name each child `review-<owner>-<repo>-<N>-<model-slug>` so concurrent reviewers are distinguishable.
+Without a model, use `review-<owner>-<repo>-<N>`. Do not create a new workspace, use `herdr agent start`
+directly, or monitor children.
 
 ```text
 /newtask [--model <REVIEW_MODEL>] --workspace <PARENT_WORKSPACE_ID> --tab <REVIEWS_TAB_ID> <REVIEW PROMPT>
@@ -114,8 +115,8 @@ Use this self-contained review prompt with every placeholder replaced:
 > - tab ID: `<PARENT_TAB_ID>`
 > - agent ID: `<PARENT_AGENT_ID>`
 
-Return immediately after `/newtask` launches the child. The callback is the
-completion mechanism.
+Return immediately after launching all selected review children. Their callbacks are the completion
+mechanism. For `--models`, collect every callback before producing one aggregate recommendation and cost.
 
 ## 4. Handle /backtoparent and clean up
 
@@ -162,8 +163,9 @@ guess from a positional pane ID.
 - Reuse the existing `reviews` tab when present; only create it once.
 - Never create or switch to a separate review workspace.
 - Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
-- When invoked with `--model`, pass the exact provider/model to `/newtask` and include the model in the
-  review child name and callback summary.
+- When invoked with `--model` or `--models`, pass every exact provider/model to `/newtask` and include
+  the model in each child name and callback summary.
+- Treat one `--models` invocation as the sole `/review` orchestration for that PR; do not rerun it.
 - Always require the child to report through `/backtoparent`.
 - Every completed review callback must include the output of `scripts/session-cost.py`.
 - Every user-facing review summary must show token and dollar cost; multi-review summaries must also
