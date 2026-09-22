@@ -14,6 +14,9 @@ Use the parent Herdr identity included in the child's initial prompt:
 The text passed to `/backtoparent` is the message to send. If no text was passed,
 send a concise summary of the child's result, current status, or blocker.
 
+A PM-launched research child may end its completed report with the exact cleanup request supplied in
+its initial prompt. It must remain idle for follow-up questions and must not close its own pane.
+
 PR ownership callbacks are control-plane messages for orchestrators. Send one immediately whenever
 this child starts managing a PR, whether it opened the PR or was assigned an existing one:
 
@@ -79,16 +82,15 @@ another target. Report locally that the parent could not be reached.
 
 ## Rules
 
-- Put the child's current pane, tab, workspace, and agent IDs at the beginning of
-  every message.
+- Put the child's current pane, tab, workspace, and agent IDs at the beginning of every message.
 - Use the exact parent pane and workspace IDs from the initial prompt.
 - Use the shared safe-herdr-message helper; it verifies the parent workspace and waits for clear input.
 - Send one concise, self-contained message.
-- Send PR ownership started/ended callbacks immediately with full canonical URLs. They are
-  control-plane metadata, not progress updates.
+- Send PR ownership started/ended callbacks immediately with full canonical URLs. They are control-plane metadata, not progress updates.
 - Use `herdr agent prompt`; do not write raw terminal input.
-- Never request or suggest pane cleanup, even when reporting that the task is
-  complete. Pane lifecycle is controlled separately from this skill.
+- Never request or suggest pane cleanup unless the initial PM research prompt explicitly supplied the
+  cleanup-request handshake. In that case, include the exact requested line and remain idle for follow-ups.
+  Pane lifecycle is always controlled by the parent.
 - Do not close the parent pane or child pane.
 - Always wait for the parent pane's input to be clear before sending. Do not
   skip this step even if the message is urgent.
