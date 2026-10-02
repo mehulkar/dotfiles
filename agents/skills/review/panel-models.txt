@@ -1,0 +1,3 @@
+vercel-ai-gateway/anthropic/claude-opus-5.5
+vercel-ai-gateway/openai/gpt-6.1-sol
+vercel-ai-gateway/moonshotai/kimi-k3

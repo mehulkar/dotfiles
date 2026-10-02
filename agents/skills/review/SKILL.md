@@ -1,6 +1,6 @@
 ---
 name: review
-description: Run a PR code review through /newtask in the shared "reviews" tab of the current Herdr workspace. The child reports findings plus token and dollar cost with /backtoparent; the parent includes cost in its summary and cleans up the pane.
+description: Run a PR code review through /newtask in capped "reviews" tabs of the current Herdr workspace. The child reports findings plus token and dollar cost with /backtoparent; the parent includes cost in its summary and cleans up the pane.
 ---
 
 # review: PR review in a Herdr pane
@@ -8,8 +8,13 @@ description: Run a PR code review through /newtask in the shared "reviews" tab o
 Invocation:
 
 ```text
-/review [--model <provider/model> | --models <model-a,model-b,...>] <PR URL, owner/repo#N, or #N>
+/review [--panel | --model <provider/model> | --models <model-a,model-b,...>] <PR URL, owner/repo#N, or #N>
 ```
+
+`--panel` is the standard multi-model review. It means `--models` with the exact model IDs listed one per
+line in `/Users/mehulkar/.agents/skills/review/panel-models.txt`. That file is the single source of truth
+for the panel; read it at invocation time and never hardcode the models elsewhere. Every other workflow
+that wants the standard review (`/prtask`, EM review triage) must use `--panel`.
 
 If `--model` is supplied, remove it from the PR arguments and pass it to `/newtask`; never silently
 substitute the default model. If `--models` is supplied, split its comma-separated exact model IDs and
@@ -53,38 +58,28 @@ an omitted repository from context, then fetch metadata:
 gh pr view <N> --repo <owner/repo> --json repository,number,title,headRefName
 ```
 
-## 3. Reuse or create the reviews tab, then launch with /newtask
+## 3. Allocate review panes, then launch with /newtask
 
-All reviews live in a single tab labeled `reviews` in the parent's current
-workspace. Look it up first; create it only if missing.
+Reviews live in capped tabs labeled `reviews`, `reviews (2)`, `reviews (3)`, ... in the parent's current
+workspace, with at most 4 panes per tab arranged as a grid. Never create review tabs or split panes by
+hand. Allocate one pane per review child with the shared helper, which keeps one fan-out in a single tab
+when it fits and opens the next numbered tab on overflow:
 
 ```sh
-REVIEWS_TAB_ID="$(
-  herdr tab list --workspace "$PARENT_WORKSPACE_ID" \
-    | jq -r '.result.tabs[] | select(.label == \"reviews\") | .tab_id' \
-    | head -n 1
-)"
-if [[ -z "$REVIEWS_TAB_ID" ]]; then
-  REVIEWS_TAB_ID="$(
-    herdr tab create \
-      --workspace "$PARENT_WORKSPACE_ID" \
-      --label "reviews" \
-      --cwd ~/dev/vercel/vercel-core \
-      --no-focus \
-    | jq -r '.result.tab.tab_id'
-  )"
-fi
+SLOTS="$(python3 /Users/mehulkar/.agents/skills/review/scripts/review-slots.py \
+  --workspace "$PARENT_WORKSPACE_ID" --count <number of review children>)"
+# {"panes": [{"pane_id": "...", "tab_id": "..."}, ...]}
 ```
 
-Invoke `/newtask` once for each selected model with the parent workspace and `REVIEWS_TAB_ID`. If the
-tab was just created, the first `/newtask` uses its initial pane; later launches split within the tab.
+Invoke `/newtask` once per review child, passing one allocated pane each:
+
+```text
+/newtask [--model <REVIEW_MODEL>] --workspace <PARENT_WORKSPACE_ID> --tab <SLOT_TAB_ID> --pane <SLOT_PANE_ID> <REVIEW PROMPT>
+```
+
 Name each child `review-<owner>-<repo>-<N>-<model-slug>` so concurrent reviewers are distinguishable.
 Without a model, use `review-<owner>-<repo>-<N>`. Do not create a new workspace, use `herdr agent start`
 directly, or monitor children.
-
-```text
-/newtask [--model <REVIEW_MODEL>] --workspace <PARENT_WORKSPACE_ID> --tab <REVIEWS_TAB_ID> <REVIEW PROMPT>
-```
 
 Use this self-contained review prompt with every placeholder replaced:
 
@@ -149,9 +144,8 @@ When the callback arrives:
    herdr pane close "<child-pane-id>"
    ```
 
-Closing the pane terminates the interactive review agent. The shared `reviews`
-tab stays open for future reviews; it is only removed if the user closes it
-manually. Do not close the parent pane.
+Closing the pane terminates the interactive review agent. A review tab closes on its own when its last
+pane closes. Do not close the parent pane.
 
 If IDs changed because another pane or tab closed, list panes only in the
 supplied child workspace and match the stable agent/session identity. Never
@@ -160,12 +154,14 @@ guess from a positional pane ID.
 ## Rules
 
 - Before creating a tab, call `herdr pane get "$HERDR_PANE_ID"` and refresh stale `HERDR_WORKSPACE_ID` and `HERDR_TAB_ID` values from the result.
-- Reuse the existing `reviews` tab when present; only create it once.
+- Allocate review panes only with `scripts/review-slots.py`: at most 4 panes per `reviews` tab, overflow
+  into `reviews (2)`, `reviews (3)`, and so on.
 - Never create or switch to a separate review workspace.
-- Always launch reviews through `/newtask` with both `--workspace` and `--tab`.
-- When invoked with `--model` or `--models`, pass every exact provider/model to `/newtask` and include
+- Always launch reviews through `/newtask` with `--workspace`, `--tab`, and the allocated `--pane`.
+- When invoked with `--panel`, `--model`, or `--models`, pass every exact provider/model to `/newtask` and include
   the model in each child name and callback summary.
-- Treat one `--models` invocation as the sole `/review` orchestration for that PR; do not rerun it.
+- Treat one `--panel` or `--models` invocation as the sole `/review` orchestration for that PR; do not
+  rerun it.
 - Always require the child to report through `/backtoparent`.
 - Every completed review callback must include the output of `scripts/session-cost.py`.
 - Every user-facing review summary must show token and dollar cost; multi-review summaries must also
