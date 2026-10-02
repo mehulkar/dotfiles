@@ -56,3 +56,6 @@ prefix_rule(pattern=["fnm", "exec", "--using", "v24.14.0", "git"], decision="all
 prefix_rule(pattern=["gh", "-R", "vercel/front", "pr", "view"], decision="allow")
 prefix_rule(pattern=["gh", "-R", "vercel/api", "run", "view"], decision="allow")
 prefix_rule(pattern=["ps", "-axo", "pid,ppid,stat,command"], decision="allow")
+prefix_rule(pattern=["git", "-C", "/Users/mehulkar/dev/vercel/vercel-core/_worktrees/api-test-reduction-incoming", "push"], decision="allow")
+prefix_rule(pattern=["gh", "pr", "view", "95370", "--repo", "vercel/api", "--json", "url,title,body,state,headRefName,files"], decision="allow")
+prefix_rule(pattern=["gh", "pr", "checks"], decision="allow")

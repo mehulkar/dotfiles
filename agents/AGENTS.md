@@ -9,7 +9,7 @@ When you talk to me, be as brief as possible.
 - Never merge a PR
 - Never reply to a human user's comment. You may reply to comments from mehulkar on GH if they are on PRs authored by mehulkar.
 
-# Voice
+## Voice
 
 When writing on my behalf (pull requests, git commits, slack messages, etc), follow `VOICE.md`,
 which is next to the real (canonical) `AGENTS.md` file.
@@ -22,7 +22,7 @@ agents_file="$(realpath /Users/mehulkar/AGENTS.md)"
 voice_file="$(dirname "$agents_file")/VOICE.md"
 ```
 
-# Worktrees
+## Worktrees
 
 Before making any file edits for a code-changing task, use a worktree (`EnterWorktree`)
 unless specififed otherwise by my prompt.
@@ -32,7 +32,7 @@ unless specififed otherwise by my prompt.
   ask.
 - If I've already told you in this session to use or skip worktrees, don't ask again.
 
-# Git commands
+## Git commands
 
 - Never prepend `cd <path> &&` to a git command. If you need to target a different directory, use `git
 -C <path> <subcommand>` instead. The `cd X && git ...` pattern triggers a permission prompt every
@@ -40,20 +40,28 @@ time, and after `EnterWorktree` the CWD is already the worktree so the `cd` is r
 
 - Never force push, unless explicitly asked to.
 
-# Pull requests
+## Pull requests
+
+### PR Body Content
 
 - Keep PR bodies concise.
-- Do not include file paths in the body
-- Describe the change at the level of behavior and intent,
 - Lead with "what" changed, then why.
+- Do not include file paths in the body.
+- Describe the change at the level of behavior and intent.
 - Lead with the change as a behavioral claim, not the audit trail. Open with "Remove X — assigned in
-  error, never used" rather than "X is written in three places but never read at runtime." Mechanics
-  belong below the headline, if anywhere.
+  error, never used" rather than "X is written in three places but never read at runtime."
 - Do not include a Validation section that just talks about running or adding tests and lint.
+
+### PR Body Formatting
 - Don't escape backticks in heredoc-quoted PR bodies. When passing a body via `gh pr create --body
   "$(cat <<'EOF' ... EOF)"`, the quoted `<<'EOF'` heredoc disables shell interpretation, so a
   backslash before a backtick is preserved literally and reaches GitHub as `\` — markdown renders
   the backslash and the code styling is lost. Write `` `foo` ``, not `` \`foo\` ``. Same applies to
   `$`, `"`, and other shell metacharacters; the quoted heredoc handles them.
-- Do not use capital letters in the PR title. especially if there is a "[prefix]", do not make the
+- When linking to other PRs in GH bodies, just use the PR URL, Github will automatically
+ format it nicely
+
+### PR Title
+
+- Never use capital letters in the PR title. If there is a leading "[prefix]", do not make the
   next character after that a capital letter.
